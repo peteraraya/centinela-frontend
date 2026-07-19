@@ -13,3 +13,16 @@ html, body, #root {
   padding: 0;
   @apply bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100;
 }
+
+/* Custom Popup Styles for Maplibre */
+.custom-popup .maplibregl-popup-content {
+  @apply bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-2xl rounded-2xl p-3;
+}
+
+.custom-popup .maplibregl-popup-tip {
+  display: none; /* Hide the default tip for a cleaner card look, or customize it */
+}
+
+.custom-popup .maplibregl-popup-close-button {
+  @apply text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-full p-1 m-1 transition-colors;
+}
