@@ -52,6 +52,7 @@ export const SearchBar = ({ onSearchComplete }: { onSearchComplete?: () => void 
         type="submit" 
         disabled={loading}
         className="bg-blue-600 dark:bg-blue-700 text-white p-2 rounded hover:bg-blue-700 dark:hover:bg-blue-600 disabled:bg-blue-300 dark:disabled:bg-blue-900 transition-colors flex items-center justify-center"
+        title={t('app.search') || 'Buscar'}
       >
         <Search className="w-4 h-4" />
       </button>

@@ -5,7 +5,8 @@ import { Menu } from 'lucide-react';
 import { useAccessibilityStore } from './store/useAccessibilityStore';
 import { AccessibilityMenu } from './components/layout/AccessibilityMenu';
 import { LiveTicker } from './components/layout/LiveTicker';
-import { ReportModal } from './components/layout/ReportModal';
+import { WeatherWidget } from './components/layout/WeatherWidget';
+import { FloatingFilters } from './components/filters/FloatingFilters';
 import { Toaster, toast } from 'react-hot-toast';
 
 function App() {
@@ -44,11 +45,10 @@ function App() {
   return (
     <div className="flex w-full h-screen overflow-hidden bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100 relative transition-colors duration-300">
       <Toaster position="top-right" />
-      <ReportModal />
       {/* Backdrop for mobile */}
       {isSidebarOpen && (
         <div 
-          className="fixed inset-0 bg-black/50 z-20 md:hidden transition-opacity" 
+          className="fixed inset-0 bg-black/50 z-20 xl:hidden transition-opacity" 
           onClick={() => setIsSidebarOpen(false)}
         />
       )}
@@ -56,8 +56,8 @@ function App() {
       {/* Sidebar */}
       <div className={`
         fixed inset-y-0 left-0 z-30 transform transition-transform duration-300 ease-in-out
-        md:relative md:transform-none w-full max-w-sm sm:w-96
-        ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'}
+        xl:relative xl:transform-none w-full max-w-sm sm:w-80
+        ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full xl:translate-x-0'}
       `}>
         <Sidebar onClose={() => setIsSidebarOpen(false)} />
       </div>
@@ -68,14 +68,23 @@ function App() {
         <MapContainer />
         <LiveTicker />
         
+        {/* Floating Top Center Weather Widget */}
+        <div className="absolute top-4 left-1/2 -translate-x-1/2 z-20 pointer-events-auto">
+          <WeatherWidget />
+        </div>
+
+        {/* Floating Right Filters */}
+        <FloatingFilters />
+
         {/* Mobile Toggle Button */}
         <button 
           onClick={() => setIsSidebarOpen(true)}
-          className="md:hidden absolute top-4 left-4 z-10 bg-white dark:bg-gray-800 p-3 rounded-full shadow-lg border border-gray-200 dark:border-gray-700 text-blue-700 dark:text-blue-400 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+          className="xl:hidden absolute top-4 left-4 z-20 bg-white dark:bg-gray-800 p-3 rounded-full shadow-lg border border-gray-200 dark:border-gray-700 text-blue-700 dark:text-blue-400 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
         >
           <Menu className="w-6 h-6" />
         </button>
       </div>
+
     </div>
   );
 }

@@ -24,6 +24,25 @@
  * @param query Texto de búsqueda (ej. "Valparaíso", "Av. Providencia")
  * @returns Array de resultados de búsqueda con latitud y longitud.
  */
+/**
+ * Obtiene el nombre de una ubicación basada en coordenadas usando Nominatim (OSM).
+ */
+export const fetchLocationName = async (lat: number, lon: number) => {
+  const url = `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}&zoom=14`;
+  const response = await fetch(url);
+  if (!response.ok) throw new Error('Error al obtener nombre de ubicación');
+  const data = await response.json();
+  
+  if (data && data.address) {
+    const city = data.address.city || data.address.town || data.address.village || data.address.county || '';
+    const state = data.address.state || data.address.region || '';
+    if (city && state) return `${city}, ${state}`;
+    if (city) return city;
+    if (state) return state;
+  }
+  return data.display_name || null;
+};
+
 export const fetchLocationQuery = async (query: string) => {
   const url = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&countrycodes=cl&limit=1`;
   const response = await fetch(url);
