@@ -43,14 +43,14 @@ export const LiveTicker = () => {
 
   return (
     <div 
-      className="absolute bottom-6 left-1/2 -translate-x-1/2 z-30 w-11/12 max-w-2xl"
+      className="absolute bottom-16 sm:bottom-6 left-1/2 -translate-x-1/2 z-30 w-[95%] sm:w-11/12 max-w-2xl pointer-events-auto"
       onMouseEnter={() => setIsPaused(true)}
       onMouseLeave={() => setIsPaused(false)}
     >
-      <div className="bg-gray-900/90 dark:bg-gray-100/90 backdrop-blur-md text-white dark:text-gray-900 rounded-2xl shadow-2xl p-1 pr-2 flex items-center gap-2 border border-white/10 dark:border-black/10 overflow-hidden">
+      <div className="bg-gray-900/90 dark:bg-gray-100/90 backdrop-blur-md text-white dark:text-gray-900 rounded-xl sm:rounded-2xl shadow-2xl p-1 sm:pr-2 flex items-center gap-1.5 sm:gap-2 border border-white/10 dark:border-black/10 overflow-hidden">
         
-        <div className="bg-red-500 text-white text-xs font-bold px-3 py-2 rounded-xl flex items-center gap-2 whitespace-nowrap">
-          <AlertCircle className={`w-4 h-4 ${!isPaused ? 'animate-pulse' : ''}`} />
+        <div className="bg-red-500 text-white text-[10px] sm:text-xs font-bold px-2 sm:px-3 py-2 rounded-lg sm:rounded-xl flex items-center shrink-0 gap-1.5 whitespace-nowrap">
+          <AlertCircle className={`w-3.5 h-3.5 sm:w-4 sm:h-4 ${!isPaused ? 'animate-pulse' : ''}`} />
           <span className="hidden sm:inline">ÚLTIMO MINUTO</span>
         </div>
         
@@ -59,39 +59,39 @@ export const LiveTicker = () => {
             if (!currentAlert.isEq) setSelectedIncidentId(currentAlert.id);
             setFlyToLocation({ longitude: currentAlert.coords[0], latitude: currentAlert.coords[1], zoom: 12 });
           }}
-          className="flex-1 overflow-hidden cursor-pointer hover:bg-white/5 dark:hover:bg-black/5 px-2 py-1 rounded transition-colors"
+          className="flex-1 min-w-0 overflow-hidden cursor-pointer hover:bg-white/5 dark:hover:bg-black/5 px-1.5 sm:px-2 py-1 rounded transition-colors"
           title="Ver en el mapa"
         >
           <div 
             key={currentAlert.id} 
-            className="text-sm font-medium truncate animate-in slide-in-from-bottom-2 fade-in duration-300"
+            className="text-xs sm:text-sm font-medium truncate animate-in slide-in-from-bottom-2 fade-in duration-300"
           >
-            <span className="text-red-400 dark:text-red-600 font-bold mr-2">{currentAlert.title}:</span>
+            <span className="text-red-400 dark:text-red-600 font-bold mr-1.5">{currentAlert.title}:</span>
             <span className="opacity-90">{currentAlert.desc}</span>
           </div>
         </div>
 
-        <div className="flex items-center gap-1">
+        <div className="flex items-center shrink-0">
           <button 
             onClick={(e) => { e.stopPropagation(); setCurrentIndex((prev) => (prev - 1 + latestAlerts.length) % latestAlerts.length); setIsPaused(true); }}
-            className="p-1.5 hover:bg-white/10 dark:hover:bg-black/10 rounded-lg transition-colors"
+            className="p-2 sm:p-1.5 hover:bg-white/10 dark:hover:bg-black/10 rounded-lg transition-colors min-w-[36px] min-h-[36px] flex items-center justify-center"
             title="Anterior"
           >
-            <ChevronLeft className="w-5 h-5 opacity-70" />
+            <ChevronLeft className="w-4 h-4 sm:w-5 sm:h-5 opacity-70" />
           </button>
           <button 
             onClick={(e) => { e.stopPropagation(); setIsPaused(!isPaused); }}
-            className="p-1.5 hover:bg-white/10 dark:hover:bg-black/10 rounded-lg transition-colors"
+            className="p-2 sm:p-1.5 hover:bg-white/10 dark:hover:bg-black/10 rounded-lg transition-colors min-w-[36px] min-h-[36px] flex items-center justify-center hidden sm:flex"
             title={isPaused ? "Reanudar" : "Pausar"}
           >
             {isPaused ? <Play className="w-4 h-4 opacity-70" /> : <Pause className="w-4 h-4 opacity-70" />}
           </button>
           <button 
             onClick={(e) => { e.stopPropagation(); setCurrentIndex((prev) => (prev + 1) % latestAlerts.length); setIsPaused(true); }}
-            className="p-1.5 hover:bg-white/10 dark:hover:bg-black/10 rounded-lg transition-colors"
+            className="p-2 sm:p-1.5 hover:bg-white/10 dark:hover:bg-black/10 rounded-lg transition-colors min-w-[36px] min-h-[36px] flex items-center justify-center"
             title="Siguiente"
           >
-            <ChevronRight className="w-5 h-5 opacity-70" />
+            <ChevronRight className="w-4 h-4 sm:w-5 sm:h-5 opacity-70" />
           </button>
         </div>
       </div>

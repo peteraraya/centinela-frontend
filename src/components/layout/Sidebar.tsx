@@ -63,38 +63,45 @@ export const Sidebar = ({ onClose }: { onClose?: () => void }) => {
     <div className="w-full h-full bg-slate-50 dark:bg-slate-900 shadow-[2px_0_20px_-5px_rgba(0,0,0,0.1)] z-10 flex flex-col border-r border-slate-200 dark:border-slate-800 transition-colors duration-300">
       
       {/* Header Premium */}
-      <div className="px-6 py-8 bg-white dark:bg-slate-900 border-b border-slate-100 dark:border-slate-800 relative shrink-0">
+      <div className="px-4 sm:px-6 pt-5 pb-4 sm:py-8 bg-white dark:bg-slate-900 border-b border-slate-100 dark:border-slate-800 relative shrink-0">
         <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-blue-600 via-purple-500 to-red-500" />
         
-        {onClose && (
-          <button 
-            onClick={onClose}
-            className="md:hidden absolute top-6 right-16 p-2 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-500 hover:bg-slate-200 transition-colors"
-          >
-            <X className="w-4 h-4" />
-          </button>
-        )}
-        <button 
-          onClick={toggleLanguage}
-          className="absolute top-6 right-6 p-2 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-500 hover:bg-slate-200 transition-colors"
-          title="Cambiar idioma / Change language"
-        >
-          <Globe className="w-4 h-4" />
-        </button>
-
-        <h1 className="text-2xl font-extrabold flex items-center gap-2 tracking-tight text-slate-900 dark:text-white">
-          <div className="p-1.5 bg-blue-600 rounded-lg shadow-sm">
-            <MapPin className="w-5 h-5 text-white" />
+        <div className="flex flex-col-reverse sm:flex-row sm:items-center justify-between w-full relative z-10 gap-3 sm:gap-0">
+          <div className="mt-2 sm:mt-0">
+            <h1 className="text-xl sm:text-2xl font-extrabold flex items-center gap-2 tracking-tight text-slate-900 dark:text-white">
+              <div className="p-1.5 sm:p-2 bg-blue-600 rounded-lg shadow-sm shrink-0">
+                <MapPin className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
+              </div>
+              {t('app.title')}
+            </h1>
+            <p className="text-slate-500 dark:text-slate-400 text-xs sm:text-sm mt-1.5 sm:mt-2 font-medium">{t('app.subtitle')}</p>
           </div>
-          {t('app.title')}
-        </h1>
-        <p className="text-slate-500 dark:text-slate-400 text-sm mt-2 font-medium">{t('app.subtitle')}</p>
+
+          <div className="flex items-center gap-1.5 sm:gap-2 self-end sm:self-auto">
+            <button 
+              onClick={toggleLanguage}
+              className="p-2 w-[44px] h-[44px] rounded-full bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 transition-colors flex items-center justify-center"
+              title="Cambiar idioma / Change language"
+            >
+              <Globe className="w-5 h-5" />
+            </button>
+            {onClose && (
+              <button 
+                onClick={onClose}
+                className="xl:hidden p-2 min-w-[44px] min-h-[44px] rounded-full bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 transition-colors flex items-center justify-center"
+                aria-label="Cerrar menú"
+              >
+                <X className="w-6 h-6" />
+              </button>
+            )}
+          </div>
+        </div>
       </div>
 
-      <div className="p-6 pt-4 flex-1 overflow-y-auto flex flex-col gap-5 custom-scrollbar">
+      <div className="p-4 sm:p-6 pt-3 sm:pt-4 flex-1 overflow-y-auto flex flex-col gap-4 sm:gap-5 custom-scrollbar">
         
         {/* Search */}
-        <section className="shrink-0">
+        <section className="shrink-0 mb-1 sm:mb-2">
           <SearchBar onSearchComplete={() => {
             if (window.innerWidth < 768 && onClose) onClose();
           }} />
@@ -102,10 +109,10 @@ export const Sidebar = ({ onClose }: { onClose?: () => void }) => {
 
         {/* Active Incidents Linear/Jira Style List */}
         <section className="flex-1 flex flex-col min-h-0">
-          <div className="flex justify-between items-center mb-4 shrink-0">
-            <h2 className="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest flex items-center">
+          <div className="flex justify-between items-center mb-3 sm:mb-4 shrink-0">
+            <h2 className="text-[10px] sm:text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest flex items-center">
               {t('app.activeIncidents') || 'Incidentes Activos'}
-              <span className="ml-2 bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-300 px-2 py-0.5 rounded-full text-[10px] font-bold">
+              <span className="ml-1.5 sm:ml-2 bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-300 px-1.5 sm:px-2 py-0.5 rounded-full text-[9px] sm:text-[10px] font-bold">
                 {filteredIncidents.length + (!hiddenFilters.includes('earthquake') && earthquakes ? earthquakes.length : 0)}
               </span>
             </h2>
@@ -114,9 +121,9 @@ export const Sidebar = ({ onClose }: { onClose?: () => void }) => {
           <div className="flex-1 overflow-y-auto pr-2 space-y-5 custom-scrollbar">
             
             {!hiddenFilters.includes('earthquake') && earthquakes && earthquakes.length > 0 && (
-              <div className="space-y-2">
-                <h3 className="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase border-b border-slate-100 dark:border-slate-800 pb-2 sticky top-0 bg-slate-50 dark:bg-slate-900 z-10 flex items-center gap-2">
-                  <Activity className="w-3.5 h-3.5 text-purple-500" />
+              <div className="space-y-2 sm:space-y-3">
+                <h3 className="text-[9px] sm:text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase border-b border-slate-100 dark:border-slate-800 pb-1.5 sm:pb-2 sticky top-0 bg-slate-50 dark:bg-slate-900 z-10 flex items-center gap-1.5 sm:gap-2">
+                  <Activity className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-purple-500" />
                   {t('filters.earthquake')}
                 </h3>
                 {earthquakes.map((eq: Earthquake) => {
@@ -150,9 +157,9 @@ export const Sidebar = ({ onClose }: { onClose?: () => void }) => {
               if (groupIncidents.length === 0) return null;
               
               return (
-                <div key={filterGroup.id} className="space-y-2">
-                  <h3 className="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase border-b border-slate-100 dark:border-slate-800 pb-2 sticky top-0 bg-slate-50 dark:bg-slate-900 z-10 flex items-center gap-2">
-                    <filterGroup.icon className={`w-3.5 h-3.5 ${filterGroup.color.split(' ')[0]}`} />
+                <div key={filterGroup.id} className="space-y-2 sm:space-y-3">
+                  <h3 className="text-[9px] sm:text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase border-b border-slate-100 dark:border-slate-800 pb-1.5 sm:pb-2 sticky top-0 bg-slate-50 dark:bg-slate-900 z-10 flex items-center gap-1.5 sm:gap-2">
+                    <filterGroup.icon className={`w-3 h-3 sm:w-3.5 sm:h-3.5 ${filterGroup.color.split(' ')[0]}`} />
                     {t(filterGroup.i18nKey)}
                   </h3>
                   

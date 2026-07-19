@@ -9,10 +9,10 @@ export const AccessibilityMenu = () => {
   const [isOpen, setIsOpen] = useState(false);
 
   return (
-    <div className="absolute top-4 right-4 z-40 flex flex-col items-end gap-2">
+    <div className="absolute top-4 sm:top-6 right-14 sm:right-6 z-40 flex flex-col items-end gap-2">
       <button 
         onClick={() => setIsOpen(!isOpen)}
-        className="bg-white dark:bg-gray-800 p-3 rounded-full shadow-lg border border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700 transition-all focus:outline-none focus:ring-2 focus:ring-blue-500"
+        className="bg-white dark:bg-slate-800 p-2 sm:p-3 min-w-[44px] min-h-[44px] flex items-center justify-center rounded-full shadow-lg border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500"
         aria-label="Menú de accesibilidad"
         title="Opciones de Accesibilidad"
       >

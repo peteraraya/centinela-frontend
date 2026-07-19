@@ -78,10 +78,10 @@ function App() {
         <MapContainer />
         <LiveTicker />
         
-        {/* Floating Weather Widget (Above Ticker) */}
-        <div className="absolute bottom-14 left-1/2 -translate-x-1/2 z-20 pointer-events-auto">
-          <WeatherWidget />
-        </div>
+      {/* Floating Weather Widget (Above Ticker) */}
+      <div className="absolute bottom-32 sm:bottom-24 left-1/2 -translate-x-1/2 z-20 pointer-events-auto transition-all duration-300">
+        <WeatherWidget />
+      </div>
 
         {/* Floating Right Filters */}
         <FloatingFilters />
@@ -89,9 +89,10 @@ function App() {
         {/* Mobile Toggle Button */}
         <button 
           onClick={() => setIsSidebarOpen(true)}
-          className="xl:hidden absolute top-4 left-4 z-20 bg-white dark:bg-gray-800 p-3 rounded-full shadow-lg border border-gray-200 dark:border-gray-700 text-blue-700 dark:text-blue-400 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+          className="xl:hidden absolute top-4 left-4 z-20 bg-white dark:bg-gray-800 p-2 sm:p-3 min-w-[44px] min-h-[44px] flex items-center justify-center rounded-full shadow-lg border border-gray-200 dark:border-gray-700 text-blue-700 dark:text-blue-400 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+          aria-label="Abrir menú"
         >
-          <Menu className="w-6 h-6" />
+          <Menu className="w-5 h-5 sm:w-6 sm:h-6" />
         </button>
       </div>
 

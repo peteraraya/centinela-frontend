@@ -19,7 +19,7 @@ export const FloatingFilters = () => {
     <div className="absolute right-4 top-1/2 -translate-y-1/2 z-20 flex flex-col gap-4 max-h-[90vh] overflow-y-auto no-scrollbar pointer-events-auto">
       
       {/* Incident Types */}
-      <div className="bg-white/90 dark:bg-slate-900/90 backdrop-blur-md p-2 rounded-2xl shadow-lg border border-slate-200 dark:border-slate-800 flex flex-col gap-2">
+      <div className="bg-white/90 dark:bg-slate-900/90 backdrop-blur-md p-1.5 sm:p-2 rounded-xl sm:rounded-2xl shadow-lg border border-slate-200 dark:border-slate-800 flex flex-col gap-1 sm:gap-2">
         {FILTERS.map((filter) => {
           const Icon = filter.icon;
           const isActive = !hiddenFilters.includes(filter.id);
@@ -31,13 +31,13 @@ export const FloatingFilters = () => {
                 setSelectedIncidentId(null);
               }}
               title={t(filter.i18nKey) || filter.id}
-              className={`p-3 rounded-xl transition-all ${
+              className={`p-2 sm:p-3 min-w-[44px] min-h-[44px] flex items-center justify-center rounded-lg sm:rounded-xl transition-all ${
                 isActive 
                   ? `${filter.bg} text-white shadow-md scale-105` 
                   : 'bg-slate-100 dark:bg-slate-800 text-slate-500 hover:bg-slate-200 dark:hover:bg-slate-700'
               }`}
             >
-              <Icon className="w-5 h-5" />
+              <Icon className="w-4 h-4 sm:w-5 sm:h-5" />
             </button>
           );
         })}

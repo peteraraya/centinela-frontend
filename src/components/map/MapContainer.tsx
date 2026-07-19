@@ -182,8 +182,10 @@ export const MapContainer = () => {
         }}
         style={{ width: '100%', height: '100%' }}
       >
-        <GeolocateControl position="bottom-right" />
-        <NavigationControl position="bottom-right" />
+        <div className="absolute bottom-36 sm:bottom-28 right-4 sm:right-6 z-10 flex flex-col gap-2">
+          <GeolocateControl position="top-right" style={{ position: 'relative', margin: 0, padding: 0 }} />
+          <NavigationControl position="top-right" style={{ position: 'relative', margin: 0, padding: 0 }} />
+        </div>
 
         <Source id="affected-zones" type="geojson" data={geoJsonData as never}>
           <Layer
