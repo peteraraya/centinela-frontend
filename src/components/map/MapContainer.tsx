@@ -308,7 +308,7 @@ export const MapContainer = () => {
             latitude={selectedIncident.coordinates[1]}
             anchor="bottom"
             onClose={() => setSelectedIncidentId(null)}
-            closeOnClick={true}
+            closeOnClick={false}
             className="custom-popup"
             maxWidth="280px"
           >
