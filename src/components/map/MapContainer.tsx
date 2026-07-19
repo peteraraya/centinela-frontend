@@ -55,6 +55,7 @@ const getIconForType = (type: string) => {
 };
 
 import { useTranslation } from 'react-i18next';
+import { toast } from 'react-hot-toast';
 import { useFilterStore } from '../../store/useFilterStore';
 import { useEarthquakes } from '../../hooks/useEarthquakes';
 import type { Earthquake } from '../../hooks/useEarthquakes';
@@ -237,6 +238,7 @@ export const MapContainer = () => {
           if (cluster.properties.category === 'incident') {
             const incident = cluster.properties.incident;
             const isHovered = hoveredIncidentId === incident.id;
+            const isSelected = selectedIncidentId === incident.id;
             return (
               <Marker
                 key={`incident-${incident.id}`}
@@ -245,8 +247,12 @@ export const MapContainer = () => {
                 style={{ zIndex: isHovered ? 10 : 1 }}
                 onClick={e => {
                   e.originalEvent.stopPropagation();
-                  setSelectedIncidentId(incident.id);
-                  setFlyToLocation({ longitude: incident.coordinates[0], latitude: incident.coordinates[1], zoom: 15 });
+                  if (isSelected) {
+                    setSelectedIncidentId(null);
+                  } else {
+                    setSelectedIncidentId(incident.id);
+                    setFlyToLocation({ longitude: incident.coordinates[0], latitude: incident.coordinates[1], zoom: 15 });
+                  }
                 }}
               >
                 <div className={`relative transition-transform duration-300 ${isHovered ? 'scale-125' : 'hover:scale-110'}`}>
@@ -264,6 +270,7 @@ export const MapContainer = () => {
           if (cluster.properties.category === 'earthquake') {
             const eq = cluster.properties.eq;
             const isHovered = hoveredIncidentId === eq.id;
+            const isSelected = selectedIncidentId === eq.id;
             return (
               <Marker
                 key={`eq-${eq.id}`}
@@ -272,7 +279,12 @@ export const MapContainer = () => {
                 style={{ zIndex: isHovered ? 10 : 1 }}
                 onClick={e => {
                   e.originalEvent.stopPropagation();
-                  setFlyToLocation({ longitude: eq.geometry.coordinates[0], latitude: eq.geometry.coordinates[1], zoom: 8 });
+                  if (isSelected) {
+                    setSelectedIncidentId(null);
+                  } else {
+                    setSelectedIncidentId(eq.id);
+                    setFlyToLocation({ longitude: eq.geometry.coordinates[0], latitude: eq.geometry.coordinates[1], zoom: 8 });
+                  }
                 }}
               >
                 <div className={`relative transition-transform duration-300 ${isHovered ? 'scale-125' : 'hover:scale-110'}`}>
@@ -298,33 +310,34 @@ export const MapContainer = () => {
             onClose={() => setSelectedIncidentId(null)}
             closeOnClick={false}
             className="custom-popup"
-            maxWidth="320px"
+            maxWidth="300px"
           >
-            <div className="p-1">
+            <div className="p-0.5">
               <div className="flex items-center gap-2 mb-2">
-                <div className={`p-1.5 rounded-lg bg-slate-100 dark:bg-slate-800`}>
+                <div className={`p-1 rounded-lg bg-slate-100 dark:bg-slate-800`}>
                   {getIconForType(selectedIncident.type)}
                 </div>
-                <h3 className="font-bold text-base leading-tight text-slate-900 dark:text-white">{selectedIncident.title}</h3>
+                <h3 className="font-bold text-[15px] leading-tight text-slate-900 dark:text-white line-clamp-2">{selectedIncident.title}</h3>
               </div>
               
-              <p className="text-sm text-slate-600 dark:text-slate-300 mb-3 leading-relaxed">
+              <p className="text-[13px] text-slate-600 dark:text-slate-300 mb-2 leading-snug line-clamp-3">
                 <MapPin className="w-3.5 h-3.5 inline mr-1 text-slate-400" />
                 {selectedIncident.description}
               </p>
 
-              <div className="flex items-center gap-2 mt-3 mb-3 pb-3 border-b border-slate-100 dark:border-slate-700/50">
-                <span className="text-[10px] font-bold text-slate-400 dark:text-slate-500 mr-1 uppercase">Compartir:</span>
+              {/* Botones Redes / Compartir (Compactos) */}
+              <div className="flex items-center gap-1.5 mt-2 mb-2 pb-2 border-b border-slate-100 dark:border-slate-700/50">
+                <span className="text-[9px] font-bold text-slate-400 dark:text-slate-500 mr-1 uppercase">Compartir:</span>
                 <button 
                   onClick={() => {
                     const text = `🚨 Emergencia: ${selectedIncident.title}\n📍 ${selectedIncident.description}\nhttps://maps.google.com/?q=${selectedIncident.coordinates[1]},${selectedIncident.coordinates[0]}`;
                     const url = `https://wa.me/?text=${encodeURIComponent(text)}`;
                     window.open(url, '_blank');
                   }}
-                  className="p-1.5 bg-green-100 hover:bg-green-200 text-green-600 rounded-full transition-colors"
-                  title="Compartir en WhatsApp"
+                  className="p-1 bg-green-50 hover:bg-green-100 text-green-600 border border-green-200 dark:border-green-800/50 dark:bg-green-900/20 rounded-full transition-colors"
+                  title="WhatsApp"
                 >
-                  <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-message-circle"><path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z"></path></svg>
+                  <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-message-circle"><path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z"></path></svg>
                 </button>
                 <button 
                   onClick={() => {
@@ -332,63 +345,63 @@ export const MapContainer = () => {
                     const url = `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(`https://maps.google.com/?q=${selectedIncident.coordinates[1]},${selectedIncident.coordinates[0]}`)}`;
                     window.open(url, '_blank');
                   }}
-                  className="p-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-full transition-colors"
-                  title="Compartir en X (Twitter)"
+                  className="p-1 bg-slate-50 hover:bg-slate-100 text-slate-600 border border-slate-200 dark:bg-slate-800 dark:border-slate-700 dark:text-slate-300 rounded-full transition-colors"
+                  title="X (Twitter)"
                 >
-                  <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-twitter"><path d="M22 4s-.7 2.1-2 3.4c1.6 10-9.4 17.3-18 11.6 2.2.1 4.4-.6 6-2C3 15.5.5 9.6 3 5c2.2 2.6 5.6 4.1 9 4-.9-4.2 4-6.6 7-3.8 1.1 0 3-1.2 3-1.2z"></path></svg>
+                  <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-twitter"><path d="M22 4s-.7 2.1-2 3.4c1.6 10-9.4 17.3-18 11.6 2.2.1 4.4-.6 6-2C3 15.5.5 9.6 3 5c2.2 2.6 5.6 4.1 9 4-.9-4.2 4-6.6 7-3.8 1.1 0 3-1.2 3-1.2z"></path></svg>
                 </button>
                 <button 
                   onClick={() => {
                     const url = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(`https://maps.google.com/?q=${selectedIncident.coordinates[1]},${selectedIncident.coordinates[0]}`)}`;
                     window.open(url, '_blank');
                   }}
-                  className="p-1.5 bg-blue-100 hover:bg-blue-200 text-blue-700 rounded-full transition-colors"
-                  title="Compartir en Facebook"
+                  className="p-1 bg-blue-50 hover:bg-blue-100 text-blue-600 border border-blue-200 dark:border-blue-800/50 dark:bg-blue-900/20 rounded-full transition-colors"
+                  title="Facebook"
                 >
-                  <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-facebook"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"></path></svg>
+                  <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-facebook"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"></path></svg>
                 </button>
-                <div className="w-px h-4 bg-gray-300 mx-1"></div>
+                <div className="w-px h-3 bg-gray-300 dark:bg-slate-700 mx-1"></div>
                 <button 
                   onClick={() => {
                     const text = `🚨 Emergencia: ${selectedIncident.title}\n📍 ${selectedIncident.description}\nhttps://maps.google.com/?q=${selectedIncident.coordinates[1]},${selectedIncident.coordinates[0]}`;
                     navigator.clipboard.writeText(text);
-                    alert('Enlace y detalles copiados al portapapeles');
+                    toast.success('Enlace copiado');
                   }}
-                  className="p-1.5 bg-slate-100 hover:bg-slate-200 text-slate-600 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700 rounded-full transition-colors flex items-center gap-1"
-                  title="Copiar enlace"
+                  className="p-1 bg-slate-50 hover:bg-slate-100 text-slate-500 border border-slate-200 dark:bg-slate-800 dark:border-slate-700 dark:text-slate-400 rounded-full transition-colors"
+                  title="Copiar"
                 >
-                  <LinkIcon className="w-4 h-4" />
+                  <LinkIcon className="w-3.5 h-3.5" />
                 </button>
               </div>
 
               {selectedIncident.details && (
-                <div className="text-xs space-y-2 text-slate-600 dark:text-slate-300">
+                <div className="text-[11px] space-y-1.5 text-slate-600 dark:text-slate-300">
                   <div className="flex justify-between items-center">
-                    <span className="font-bold text-[10px] tracking-wider text-slate-400 dark:text-slate-500 uppercase">{t('incident.status') || 'ESTADO'}:</span> 
-                    <span className="font-medium bg-slate-100 dark:bg-slate-800 px-2 py-0.5 rounded text-slate-700 dark:text-slate-300">{selectedIncident.details.status}</span>
+                    <span className="font-bold text-[9px] tracking-wider text-slate-400 dark:text-slate-500 uppercase">ESTADO:</span> 
+                    <span className="font-medium bg-slate-100 dark:bg-slate-800 px-1.5 py-0.5 rounded text-slate-700 dark:text-slate-300">{selectedIncident.details.status}</span>
                   </div>
                   <div className="flex justify-between items-center">
-                    <span className="font-bold text-[10px] tracking-wider text-slate-400 dark:text-slate-500 uppercase">{t('incident.reportedBy') || 'REPORTE'}:</span> 
-                    <span className="text-right font-medium">{selectedIncident.details.reportedBy}</span>
+                    <span className="font-bold text-[9px] tracking-wider text-slate-400 dark:text-slate-500 uppercase">REPORTE:</span> 
+                    <span className="text-right font-medium truncate max-w-[140px]" title={selectedIncident.details.reportedBy}>{selectedIncident.details.reportedBy}</span>
                   </div>
                   <div className="flex justify-between items-center">
-                    <span className="font-bold text-[10px] tracking-wider text-slate-400 dark:text-slate-500 uppercase">{t('incident.units') || 'UNIDADES'}:</span> 
+                    <span className="font-bold text-[9px] tracking-wider text-slate-400 dark:text-slate-500 uppercase">UNIDADES:</span> 
                     <span className="font-medium">{selectedIncident.details.unitsDispatched}</span>
                   </div>
                   <div className="flex justify-between items-center">
-                    <span className="font-bold text-[10px] tracking-wider text-slate-400 dark:text-slate-500 uppercase">{t('incident.affectedArea') || 'AFECTACIÓN'}:</span> 
-                    <span className="text-right truncate max-w-[150px] font-medium">{selectedIncident.details.affectedArea}</span>
+                    <span className="font-bold text-[9px] tracking-wider text-slate-400 dark:text-slate-500 uppercase">AFECTACIÓN:</span> 
+                    <span className="text-right truncate max-w-[140px] font-medium" title={selectedIncident.details.affectedArea}>{selectedIncident.details.affectedArea}</span>
                   </div>
-                  <div className="flex justify-between items-center pt-2">
-                    <span className="font-bold text-[10px] tracking-wider text-slate-400 dark:text-slate-500 uppercase">{t('incident.updated') || 'ACTUALIZADO'}:</span> 
+                  <div className="flex justify-between items-center pt-1">
+                    <span className="font-bold text-[9px] tracking-wider text-slate-400 dark:text-slate-500 uppercase">ACTUALIZADO:</span> 
                     <span className="text-blue-600 dark:text-blue-400 font-medium">{selectedIncident.details.lastUpdate}</span>
                   </div>
                 </div>
               )}
 
-              <div className="mt-3 pt-3 border-t border-slate-100 dark:border-slate-700/50 flex justify-between items-center">
-                <span className="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider">{t('app.severity') || 'SEVERIDAD'}:</span>
-                <span className={`text-[10px] font-bold uppercase px-2 py-0.5 rounded-full ${
+              <div className="mt-2 pt-2 border-t border-slate-100 dark:border-slate-700/50 flex justify-between items-center">
+                <span className="text-[9px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider">SEVERIDAD:</span>
+                <span className={`text-[9px] font-bold uppercase px-2 py-0.5 rounded-full ${
                   {
                     critical: 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400',
                     high: 'bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-400',
