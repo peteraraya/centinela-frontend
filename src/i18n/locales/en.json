@@ -1,0 +1,33 @@
+{
+  "app": {
+    "title": "Sentinel",
+    "subtitle": "Active Monitoring Network",
+    "location": "Location",
+    "searchPlaceholder": "Search region, city, street...",
+    "filters": "Incident Filters",
+    "activeIncidents": "Active Incidents",
+    "noIncidents": "No incidents found for the selected filters.",
+    "loading": "Loading incidents...",
+    "locationNotFound": "Location not found",
+    "searchError": "Error searching location",
+    "severity": "Severity",
+    "loadingWeather": "Getting weather...",
+    "currentWeather": "Live",
+    "temp": "Temperature",
+    "wind": "Wind"
+  },
+  "filters": {
+    "fire": "Fires",
+    "accident": "Accidents",
+    "utility": "Utility Outages",
+    "rain": "Rain / Floods",
+    "earthquake": "Earthquakes (USGS)"
+  },
+  "incident": {
+    "status": "Status",
+    "reportedBy": "Reported By",
+    "units": "Units",
+    "affectedArea": "Affected Area",
+    "updated": "Updated"
+  }
+}

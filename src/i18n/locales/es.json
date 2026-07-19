@@ -1,0 +1,34 @@
+{
+  "app": {
+    "title": "Centinela",
+    "subtitle": "Red Nacional de Monitoreo Activo",
+    "location": "Ubicación",
+    "searchPlaceholder": "Buscar región, ciudad, calle...",
+    "filters": "Filtros de Incidentes",
+    "activeIncidents": "Incidentes Activos",
+    "noIncidents": "No hay incidentes para los filtros seleccionados.",
+    "loading": "Cargando incidentes...",
+    "locationNotFound": "Ubicación no encontrada",
+    "searchError": "Error al buscar la ubicación",
+    "severity": "Severidad",
+    "loadingWeather": "Obteniendo clima...",
+    "currentWeather": "En Vivo",
+    "temp": "Temperatura",
+    "wind": "Viento"
+  },
+  "filters": {
+    "alert": "Alertas",
+    "fire": "Incendios",
+    "accident": "Accidentes",
+    "utility": "Cortes Suministro",
+    "rain": "Lluvias",
+    "earthquake": "Sismos (USGS)"
+  },
+  "incident": {
+    "status": "Estado",
+    "reportedBy": "Reporta",
+    "units": "Unidades",
+    "affectedArea": "Afectación",
+    "updated": "Actualizado"
+  }
+}

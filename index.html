@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Centinela - Red de Monitoreo Activo</title>
+    <script>
+      try {
+        const stored = localStorage.getItem('accessibility-storage');
+        if (stored) {
+          const parsed = JSON.parse(stored);
+          const theme = parsed?.state?.theme;
+          const fontSize = parsed?.state?.fontSize;
+          if (theme === 'dark') document.documentElement.classList.add('dark');
+          if (theme === 'grayscale') document.documentElement.classList.add('grayscale-mode');
+          if (fontSize === 'large') document.documentElement.classList.add('text-lg');
+        }
+      } catch (e) {}
+    </script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>
