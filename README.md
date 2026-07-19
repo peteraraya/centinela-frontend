@@ -85,15 +85,37 @@ src/
 └── main.tsx      # Punto de entrada de la aplicación
 ```
 
+## 🚀 Flujo de Trabajo (Git Workflow) y CI/CD
+
+El proyecto sigue una estrategia basada en **Git Flow** y cuenta con integración continua (CI) mediante **GitHub Actions**.
+
+### Estructura de Ramas
+
+- `main`: Es la rama principal y refleja el código en producción. Solo recibe *Pull Requests* aprobados desde `develop` (o hotfixes urgentes). Su código siempre debe ser estable.
+- `develop`: Es la rama de integración para el desarrollo actual. Las nuevas características se integran aquí antes de pasar a producción.
+- `feature/*`: Ramas temporales utilizadas para desarrollar nuevas características. Se crean a partir de `develop` y se fusionan (`merge`) de vuelta a `develop` a través de un Pull Request.
+  - Ejemplo: `feature/agregar-mapa-calor`
+- `hotfix/*`: Ramas creadas para solucionar errores críticos en producción (`main`).
+
+### Github Actions (CI/CD)
+
+El proyecto incluye un flujo de trabajo de GitHub Actions (`.github/workflows/ci.yml`) que se ejecuta automáticamente ante cada `push` o `Pull Request` a las ramas `main` y `develop`.
+
+El Pipeline realiza de forma automática:
+1. Instalación de dependencias.
+2. Análisis estático del código (`npm run lint`) para asegurar estándares de calidad.
+3. Compilación del proyecto (`npm run build`) para garantizar que la aplicación se construya correctamente sin errores.
+
 ## 🤝 Contribución
 
 ¡Las contribuciones son bienvenidas! Si deseas mejorar esta plataforma:
 
 1. Haz un **Fork** del repositorio.
-2. Crea una rama para tu nueva característica (`git checkout -b feature/nueva-caracteristica`).
-3. Haz commit de tus cambios (`git commit -m 'Añadir nueva característica'`).
-4. Haz push a la rama (`git push origin feature/nueva-caracteristica`).
-5. Abre un **Pull Request**.
+2. Crea tu rama a partir de `develop`: `git checkout -b feature/nueva-caracteristica`
+3. Haz commit de tus cambios: `git commit -m 'feat: Añadir nueva característica'`
+4. Haz push a la rama: `git push origin feature/nueva-caracteristica`
+5. Abre un **Pull Request** hacia la rama `develop`.
+6. Asegúrate de que las comprobaciones de **GitHub Actions** (CI) pasen correctamente.
 
 ## 📄 Licencia
 
