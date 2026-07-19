@@ -65,7 +65,7 @@ const Switch = ({ checked, onChange, activeColor = 'bg-blue-500' }: { checked: b
 
 export const Sidebar = ({ onClose }: { onClose?: () => void }) => {
   const { t, i18n } = useTranslation();
-  const { hiddenFilters, toggleFilter, setFlyToLocation, selectedIncidentId, setSelectedIncidentId, setIsReportModalOpen } = useFilterStore();
+  const { hiddenFilters, toggleFilter, setFlyToLocation, selectedIncidentId, setSelectedIncidentId } = useFilterStore();
   const { data: incidents } = useIncidents();
   const { data: earthquakes } = useEarthquakes();
 
@@ -105,13 +105,6 @@ export const Sidebar = ({ onClose }: { onClose?: () => void }) => {
           {t('app.title')}
         </h1>
         <p className="text-slate-500 dark:text-slate-400 text-sm mt-2 font-medium">{t('app.subtitle')}</p>
-        
-        <button 
-          onClick={() => setIsReportModalOpen(true)}
-          className="mt-6 w-full bg-red-500 hover:bg-red-600 text-white font-bold py-3 px-4 rounded-xl flex items-center justify-center gap-2 transition-colors shadow-sm"
-        >
-          <AlertTriangle className="w-5 h-5" /> Reportar Emergencia
-        </button>
       </div>
 
       <div className="p-6 pt-2 flex-1 overflow-y-auto flex flex-col gap-8 custom-scrollbar">

@@ -1,6 +1,5 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import type { Incident } from '../types';
 
 interface FilterState {
   hiddenFilters: string[];
@@ -13,10 +12,6 @@ interface FilterState {
   setSelectedIncidentId: (id: string | null) => void;
   mapType: 'street' | 'satellite';
   setMapType: (type: 'street' | 'satellite') => void;
-  isReportModalOpen: boolean;
-  setIsReportModalOpen: (isOpen: boolean) => void;
-  userReportedIncidents: Incident[];
-  addUserReportedIncident: (incident: Incident) => void;
 }
 
 export const useFilterStore = create<FilterState>()(
@@ -37,10 +32,6 @@ export const useFilterStore = create<FilterState>()(
       setSelectedIncidentId: (id) => set({ selectedIncidentId: id }),
       mapType: 'street',
       setMapType: (type) => set({ mapType: type }),
-      isReportModalOpen: false,
-      setIsReportModalOpen: (isOpen) => set({ isReportModalOpen: isOpen }),
-      userReportedIncidents: [],
-      addUserReportedIncident: (incident) => set((state) => ({ userReportedIncidents: [incident, ...state.userReportedIncidents] }))
     }),
     {
       name: 'filter-storage',

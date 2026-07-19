@@ -5,7 +5,6 @@ import { Menu } from 'lucide-react';
 import { useAccessibilityStore } from './store/useAccessibilityStore';
 import { AccessibilityMenu } from './components/layout/AccessibilityMenu';
 import { LiveTicker } from './components/layout/LiveTicker';
-import { ReportModal } from './components/layout/ReportModal';
 import { Toaster, toast } from 'react-hot-toast';
 
 function App() {
@@ -44,7 +43,6 @@ function App() {
   return (
     <div className="flex w-full h-screen overflow-hidden bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100 relative transition-colors duration-300">
       <Toaster position="top-right" />
-      <ReportModal />
       {/* Backdrop for mobile */}
       {isSidebarOpen && (
         <div 

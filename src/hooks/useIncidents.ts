@@ -104,11 +104,7 @@ const fetchLiveIncidents = async (): Promise<Incident[]> => {
   }
 };
 
-import { useFilterStore } from '../store/useFilterStore';
-
 export const useIncidents = () => {
-  const { userReportedIncidents } = useFilterStore();
-  
   const query = useQuery({
     queryKey: ['live_incidents'],
     queryFn: fetchLiveIncidents,
@@ -117,6 +113,6 @@ export const useIncidents = () => {
 
   return {
     ...query,
-    data: [...(query.data || []), ...userReportedIncidents]
+    data: query.data || []
   };
 };
