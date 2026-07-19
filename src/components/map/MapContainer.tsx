@@ -5,7 +5,8 @@ import 'maplibre-gl/dist/maplibre-gl.css';
 import { useIncidents } from '../../hooks/useIncidents';
 import { Flame, Car, Zap, AlertTriangle, CloudRain, Activity, Link as LinkIcon, MapPin } from 'lucide-react';
 import useSupercluster from 'use-supercluster';
-import type { BBox } from 'geojson';
+
+type BBox = [number, number, number, number];
 
 const createGeoJSONCircle = (center: [number, number], radiusInMeters: number, type: string) => {
   const points = 64;
