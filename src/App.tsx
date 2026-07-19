@@ -8,10 +8,12 @@ import { LiveTicker } from './components/layout/LiveTicker';
 import { WeatherWidget } from './components/layout/WeatherWidget';
 import { FloatingFilters } from './components/filters/FloatingFilters';
 import { Toaster, toast } from 'react-hot-toast';
+import { useFilterStore } from './store/useFilterStore';
 
 function App() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const { theme, fontSize } = useAccessibilityStore();
+  const { setSelectedIncidentId } = useFilterStore();
 
   useEffect(() => {
     const html = document.documentElement;
@@ -63,7 +65,15 @@ function App() {
       </div>
 
       {/* Map Area */}
-      <div className="flex-1 relative h-full w-full">
+      <div 
+        className="flex-1 relative h-full w-full"
+        onClick={(e) => {
+          // Si el click ocurre directamente en el contenedor, cierra el popup
+          if (e.target === e.currentTarget) {
+            setSelectedIncidentId(null);
+          }
+        }}
+      >
         <AccessibilityMenu />
         <MapContainer />
         <LiveTicker />

@@ -13,7 +13,7 @@ const FILTERS = [
 
 export const FloatingFilters = () => {
   const { t } = useTranslation();
-  const { hiddenFilters, toggleFilter } = useFilterStore();
+  const { hiddenFilters, toggleFilter, setSelectedIncidentId } = useFilterStore();
 
   return (
     <div className="absolute right-4 top-1/2 -translate-y-1/2 z-20 flex flex-col gap-4 max-h-[90vh] overflow-y-auto no-scrollbar pointer-events-auto">
@@ -26,7 +26,10 @@ export const FloatingFilters = () => {
           return (
             <button
               key={filter.id}
-              onClick={() => toggleFilter(filter.id)}
+              onClick={() => {
+                toggleFilter(filter.id);
+                setSelectedIncidentId(null);
+              }}
               title={t(filter.i18nKey) || filter.id}
               className={`p-3 rounded-xl transition-all ${
                 isActive 
