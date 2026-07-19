@@ -68,8 +68,8 @@ function App() {
         <MapContainer />
         <LiveTicker />
         
-        {/* Floating Top Center Weather Widget */}
-        <div className="absolute top-4 left-1/2 -translate-x-1/2 z-20 pointer-events-auto">
+        {/* Floating Weather Widget (Above Ticker) */}
+        <div className="absolute bottom-14 left-1/2 -translate-x-1/2 z-20 pointer-events-auto">
           <WeatherWidget />
         </div>
 
