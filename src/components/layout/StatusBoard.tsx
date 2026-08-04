@@ -1,5 +1,4 @@
 import { X, Activity, Flame, Car, CloudRain, Zap, Info } from 'lucide-react';
-import { useTranslation } from 'react-i18next';
 import { useIncidents } from '../../hooks/useIncidents';
 import { useEarthquakes } from '../../hooks/useEarthquakes';
 
@@ -8,7 +7,6 @@ interface StatusBoardProps {
 }
 
 export const StatusBoard = ({ onClose }: StatusBoardProps) => {
-  const { t } = useTranslation();
   const { data: incidents } = useIncidents();
   const { data: earthquakes } = useEarthquakes();
 

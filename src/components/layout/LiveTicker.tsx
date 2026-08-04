@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useNews } from '../../hooks/useNews';
-import { AlertCircle, ChevronRight, ChevronLeft, Pause, Play, Newspaper, X, Share2, Link as LinkIcon, MessageCircle } from 'lucide-react';
+import { ChevronRight, ChevronLeft, Pause, Play, Newspaper, X, Share2, Link as LinkIcon, MessageCircle } from 'lucide-react';
 import { useFilterStore } from '../../store/useFilterStore';
 import { useRef } from 'react';
 import { toast } from 'react-hot-toast';
