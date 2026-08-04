@@ -6,9 +6,10 @@ import { useIncidents } from '../../hooks/useIncidents';
 import { useEarthquakes } from '../../hooks/useEarthquakes';
 import type { Incident } from '../../types';
 import type { Earthquake } from '../../hooks/useEarthquakes';
-import { useRef } from 'react';
+import { useRef, useState } from 'react';
 
-import { Cone } from 'lucide-react';
+import { Cone, Cross } from 'lucide-react';
+import { useFarmacias } from '../../hooks/useFarmacias';
 
 const FILTERS = [
   { id: 'alert', i18nKey: 'filters.alert', icon: AlertTriangle, color: 'text-teal-500' },
@@ -33,9 +34,26 @@ const getSeverityColor = (severity: string) => {
 
 export const Sidebar = ({ onClose }: { onClose?: () => void }) => {
   const { t, i18n } = useTranslation();
-  const { hiddenFilters, hiddenSeverities, setFlyToLocation, selectedIncidentId, setSelectedIncidentId, setHoveredIncidentId, hoveredIncidentId } = useFilterStore();
+  const { hiddenFilters, hiddenSeverities, setFlyToLocation, selectedIncidentId, setSelectedIncidentId, setHoveredIncidentId, hoveredIncidentId, showFarmacias } = useFilterStore();
   const { data: incidents } = useIncidents();
   const { data: earthquakes } = useEarthquakes();
+  const { data: farmacias } = useFarmacias();
+  
+  const [farmaciaComunaFilter, setFarmaciaComunaFilter] = useState('');
+  const [soloDeTurno, setSoloDeTurno] = useState(true);
+
+  const isFarmaciaDeTurno = (f: any) => {
+    if (!f.horaApertura || !f.horaCierre) return false;
+    const parseTime = (time: string) => {
+      const parts = time.split(':').map(Number);
+      return (parts[0] * 60) + (parts[1] || 0);
+    };
+    const start = parseTime(f.horaApertura);
+    const end = parseTime(f.horaCierre);
+    // Asume que si cierra a una hora menor o igual a la que abre (ej. abre 09:00, cierra 08:59 o 09:00 del otro día),
+    // o si cierra durante la madrugada/mañana (<= 10:00 AM), está de turno nocturno.
+    return end <= start || end <= (10 * 60); 
+  };
   
   const hoverTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -139,6 +157,80 @@ export const Sidebar = ({ onClose }: { onClose?: () => void }) => {
             </div>
           </div>
         </section>
+
+        {/* Farmacias Section */}
+        {showFarmacias && farmacias && farmacias.length > 0 && (
+          <section className="shrink-0 mb-4 flex flex-col min-h-0 max-h-72 border border-emerald-200 dark:border-emerald-800 rounded-xl overflow-hidden bg-emerald-50/50 dark:bg-emerald-900/10">
+            <div className="flex flex-col gap-2 p-3 border-b border-emerald-100 dark:border-emerald-800/50 bg-emerald-100/50 dark:bg-emerald-900/30">
+              <div className="flex justify-between items-center">
+                <h2 className="text-[10px] sm:text-xs font-bold text-emerald-700 dark:text-emerald-400 uppercase tracking-widest flex items-center gap-1.5">
+                  <Cross className="w-3.5 h-3.5" />
+                  Farmacias
+                  <span className="ml-1.5 bg-emerald-200 dark:bg-emerald-800 text-emerald-800 dark:text-emerald-200 px-1.5 py-0.5 rounded-full text-[9px] font-bold">
+                    {farmacias.filter(f => soloDeTurno ? isFarmaciaDeTurno(f) : true).length}
+                  </span>
+                </h2>
+                
+                <label className="flex items-center gap-1.5 cursor-pointer">
+                  <input 
+                    type="checkbox" 
+                    checked={soloDeTurno} 
+                    onChange={(e) => setSoloDeTurno(e.target.checked)} 
+                    className="w-3.5 h-3.5 rounded text-emerald-600 focus:ring-emerald-500 bg-white border-emerald-300 dark:border-emerald-700 dark:bg-slate-800"
+                  />
+                  <span className="text-[10px] font-bold text-emerald-800 dark:text-emerald-300 uppercase tracking-wider">Solo Turno</span>
+                </label>
+              </div>
+              
+              <input
+                type="text"
+                placeholder="Filtrar por comuna (Ej: Providencia)"
+                value={farmaciaComunaFilter}
+                onChange={(e) => setFarmaciaComunaFilter(e.target.value)}
+                className="w-full text-xs p-2 rounded-lg border border-emerald-200 dark:border-emerald-700 bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+              />
+            </div>
+
+            <div className="overflow-y-auto custom-scrollbar p-2 flex flex-col gap-2">
+              {farmacias
+                .filter(f => soloDeTurno ? isFarmaciaDeTurno(f) : true)
+                .filter(f => farmaciaComunaFilter === '' || f.comuna.toLowerCase().includes(farmaciaComunaFilter.toLowerCase()))
+                .slice(0, 100) // Limit to 100 to prevent extreme lag
+                .map((farmacia, idx) => {
+                  const deTurno = isFarmaciaDeTurno(farmacia);
+                  return (
+                    <div 
+                      key={idx} 
+                      className={`p-2.5 rounded-lg border transition-all hover:shadow-sm cursor-pointer ${
+                        deTurno 
+                          ? 'bg-emerald-50 dark:bg-emerald-900/40 border-emerald-300 dark:border-emerald-600 hover:border-emerald-500' 
+                          : 'bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 hover:border-emerald-300'
+                      }`}
+                      onClick={() => {
+                        setFlyToLocation({ longitude: farmacia.longitud, latitude: farmacia.latitud, zoom: 16 });
+                        if (window.innerWidth < 768 && onClose) onClose();
+                      }}
+                    >
+                      <div className="flex justify-between items-start gap-2">
+                        <h3 className="font-bold text-xs text-slate-800 dark:text-slate-200 truncate">{farmacia.nombre}</h3>
+                        {deTurno && <span className="shrink-0 bg-emerald-500 text-white text-[8px] font-black uppercase px-1.5 py-0.5 rounded">Turno</span>}
+                      </div>
+                      <p className="text-[10px] text-slate-500 dark:text-slate-400 truncate mt-0.5">{farmacia.direccion}, {farmacia.comuna}</p>
+                      <div className="flex justify-between items-center mt-1.5 pt-1.5 border-t border-slate-100 dark:border-slate-700/50">
+                        <span className="text-[9px] font-medium text-slate-500 dark:text-slate-400">Apertura: {farmacia.horaApertura}</span>
+                        <span className="text-[9px] font-bold text-slate-700 dark:text-slate-300">Cierre: {farmacia.horaCierre}</span>
+                      </div>
+                    </div>
+                  );
+                })}
+              {farmacias.filter(f => soloDeTurno ? isFarmaciaDeTurno(f) : true).filter(f => farmaciaComunaFilter === '' || f.comuna.toLowerCase().includes(farmaciaComunaFilter.toLowerCase())).length > 100 && (
+                <div className="text-center text-[10px] font-medium text-emerald-600 py-1">
+                  Se muestran las primeras 100. Usa el buscador para afinar.
+                </div>
+              )}
+            </div>
+          </section>
+        )}
 
         {/* Active Incidents Linear/Jira Style List */}
         <section className="flex-1 flex flex-col min-h-0">

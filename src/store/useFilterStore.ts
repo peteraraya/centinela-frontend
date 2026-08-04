@@ -32,6 +32,8 @@ interface FilterState {
   setSafeZoneRadiusKm: (km: number) => void;
   isHeatmap: boolean;
   setIsHeatmap: (active: boolean) => void;
+  showFarmacias: boolean;
+  setShowFarmacias: (show: boolean) => void;
 }
 
 export const useFilterStore = create<FilterState>()(
@@ -77,6 +79,8 @@ export const useFilterStore = create<FilterState>()(
       setSafeZoneRadiusKm: (km) => set({ safeZoneRadiusKm: km }),
       isHeatmap: false,
       setIsHeatmap: (active) => set({ isHeatmap: active }),
+      showFarmacias: false,
+      setShowFarmacias: (show) => set({ showFarmacias: show }),
     }),
     {
       name: 'filter-storage',
