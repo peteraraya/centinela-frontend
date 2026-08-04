@@ -95,3 +95,10 @@ export const fetchNewsFeed = async () => {
   if (!response.ok) throw new Error('Error al obtener noticias del backend');
   return await response.json();
 };
+
+export const fetchFarmacias = async () => {
+  const url = (import.meta.env.VITE_API_URL || 'http://localhost:3000/api/v1') + '/farmacias';
+  const response = await fetch(url);
+  if (!response.ok) throw new Error('Error al obtener farmacias');
+  return await response.json();
+};

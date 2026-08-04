@@ -69,12 +69,18 @@ import type { Incident } from '../../types';
 import { useAccessibilityStore } from '../../store/useAccessibilityStore';
 import { calculateDistance } from '../../utils/distance';
 
+import { useFarmacias } from '../../hooks/useFarmacias';
+import type { Farmacia } from '../../hooks/useFarmacias';
+import { Cross } from 'lucide-react';
+
 export const MapContainer = () => {
   const { t } = useTranslation();
   const { data: incidents, isLoading } = useIncidents();
   const { data: earthquakes } = useEarthquakes();
-  const { hiddenFilters, mapView, setMapView, selectedIncidentId, setSelectedIncidentId, flyToLocation, setFlyToLocation, mapType, hoveredIncidentId, userLocation, userLocationName, timeFilterHours, safeZoneRadiusKm, isHeatmap } = useFilterStore();
+  const { data: farmacias } = useFarmacias();
+  const { hiddenFilters, mapView, setMapView, selectedIncidentId, setSelectedIncidentId, flyToLocation, setFlyToLocation, mapType, hoveredIncidentId, userLocation, userLocationName, timeFilterHours, safeZoneRadiusKm, isHeatmap, showFarmacias } = useFilterStore();
   const { theme } = useAccessibilityStore();
+  const [selectedFarmacia, setSelectedFarmacia] = useState<Farmacia | null>(null);
   
   const mapRef = useRef<MapRef>(null);
 
@@ -112,8 +118,17 @@ export const MapContainer = () => {
         }))
       : [];
 
-    return [...incidentPoints, ...eqPoints];
-  }, [incidents, filteredEarthquakes, hiddenFilters]);
+    const farmaciaPoints = (showFarmacias && farmacias) ? farmacias.map((f, i) => ({
+      type: 'Feature' as const,
+      properties: { cluster: false, farmaciaId: i.toString(), category: 'farmacia', farmacia: f },
+      geometry: {
+        type: 'Point' as const,
+        coordinates: [f.longitud, f.latitud]
+      }
+    })) : [];
+
+    return [...incidentPoints, ...eqPoints, ...farmaciaPoints];
+  }, [incidents, filteredEarthquakes, hiddenFilters, farmacias, showFarmacias]);
 
   const [bounds, setBounds] = useState<BBox | null>(null);
   const [zoom, setZoom] = useState(mapView.zoom);
@@ -336,7 +351,7 @@ export const MapContainer = () => {
 
         {!isHeatmap && clusters.map(cluster => {
           const [longitude, latitude] = cluster.geometry.coordinates;
-          const { cluster: isCluster, point_count: pointCount } = cluster.properties as { cluster?: boolean; point_count?: number; category?: string; incident?: Incident; eq?: Earthquake; earthquakeId?: string };
+          const { cluster: isCluster, point_count: pointCount } = cluster.properties as { cluster?: boolean; point_count?: number; category?: string; incident?: Incident; eq?: Earthquake; earthquakeId?: string; farmacia?: Farmacia; farmaciaId?: string };
 
           if (isCluster) {
             return (
@@ -427,9 +442,80 @@ export const MapContainer = () => {
               </Marker>
             );
           }
+
+          if (cluster.properties.category === 'farmacia' && cluster.properties.farmacia) {
+            const farmacia = cluster.properties.farmacia;
+            const isSelected = selectedFarmacia?.nombre === farmacia.nombre && selectedFarmacia?.latitud === farmacia.latitud;
+            return (
+              <Marker
+                key={`farmacia-${farmacia.latitud}-${farmacia.longitud}`}
+                longitude={farmacia.longitud}
+                latitude={farmacia.latitud}
+                style={{ zIndex: isSelected ? 10 : 2 }}
+                onClick={e => {
+                  e.originalEvent.stopPropagation();
+                  if (isSelected) {
+                    setSelectedFarmacia(null);
+                  } else {
+                    setSelectedFarmacia(farmacia);
+                    setFlyToLocation({ longitude: farmacia.longitud, latitude: farmacia.latitud, zoom: 15 });
+                  }
+                }}
+              >
+                <div className={`relative transition-transform duration-300 hover:scale-110`}>
+                  <div className={`relative cursor-pointer bg-emerald-100 dark:bg-emerald-900/80 rounded-full p-1 shadow-md border ${isSelected ? 'border-emerald-500 dark:border-emerald-400' : 'border-emerald-300 dark:border-emerald-700'}`}>
+                    <Cross className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
+                  </div>
+                </div>
+              </Marker>
+            );
+          }
           
           return null;
         })}
+
+        {selectedFarmacia && (
+          <Popup
+            longitude={selectedFarmacia.longitud}
+            latitude={selectedFarmacia.latitud}
+            anchor="bottom"
+            onClose={() => setSelectedFarmacia(null)}
+            closeOnClick={false}
+            className="custom-popup"
+            maxWidth="280px"
+          >
+            <div className="p-1">
+              <div className="flex items-center gap-2 mb-2">
+                <div className="p-1.5 rounded-lg bg-emerald-100 dark:bg-emerald-900/50 shrink-0">
+                  <Cross className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
+                </div>
+                <h3 className="font-bold text-sm leading-tight text-slate-900 dark:text-white">{selectedFarmacia.nombre}</h3>
+              </div>
+              
+              <p className="text-xs text-slate-600 dark:text-slate-300 mb-2 font-medium">
+                <MapPin className="w-3.5 h-3.5 inline mr-1 text-slate-400" />
+                {selectedFarmacia.direccion}, {selectedFarmacia.comuna}
+              </p>
+
+              <div className="mt-3 p-2 bg-slate-50 dark:bg-slate-800 rounded-lg border border-slate-100 dark:border-slate-700">
+                <div className="flex justify-between items-center text-xs mb-1">
+                  <span className="font-bold text-[9px] text-slate-400 uppercase tracking-wider">Apertura</span>
+                  <span className="font-semibold text-emerald-600 dark:text-emerald-400">{selectedFarmacia.horaApertura}</span>
+                </div>
+                <div className="flex justify-between items-center text-xs">
+                  <span className="font-bold text-[9px] text-slate-400 uppercase tracking-wider">Cierre</span>
+                  <span className="font-semibold text-red-500">{selectedFarmacia.horaCierre}</span>
+                </div>
+              </div>
+
+              {selectedFarmacia.telefono && (
+                <div className="mt-2 text-xs font-medium text-slate-600 dark:text-slate-300 text-center">
+                  📞 {selectedFarmacia.telefono}
+                </div>
+              )}
+            </div>
+          </Popup>
+        )}
 
         {selectedIncident && (
           <Popup

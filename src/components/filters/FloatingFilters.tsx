@@ -2,7 +2,7 @@ import { useFilterStore } from '../../store/useFilterStore';
 import { Flame, Car, Zap, AlertTriangle, CloudRain, Activity, Info, Cone } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'react-hot-toast';
-import { Focus, Volume2, VolumeX, BarChart3, Layers } from 'lucide-react';
+import { Focus, Volume2, VolumeX, BarChart3, Layers, Cross } from 'lucide-react';
 
 const FILTERS = [
   { id: 'alert', i18nKey: 'filters.alert', icon: AlertTriangle, color: 'text-teal-500', bg: 'bg-teal-500', available: true },
@@ -18,11 +18,14 @@ const FILTERS = [
 import { useIncidents } from '../../hooks/useIncidents';
 import { useEarthquakes } from '../../hooks/useEarthquakes';
 
+import { useFarmacias } from '../../hooks/useFarmacias';
+
 export const FloatingFilters = () => {
   const { t } = useTranslation();
-  const { hiddenFilters, toggleFilter, setSelectedIncidentId, setPanicMode, soundEnabled, setSoundEnabled, setShowStatusBoard, isHeatmap, setIsHeatmap } = useFilterStore();
+  const { hiddenFilters, toggleFilter, setSelectedIncidentId, setPanicMode, soundEnabled, setSoundEnabled, setShowStatusBoard, isHeatmap, setIsHeatmap, showFarmacias, setShowFarmacias } = useFilterStore();
   const { data: incidents } = useIncidents();
   const { data: earthquakes } = useEarthquakes();
+  const { data: farmacias } = useFarmacias();
 
   const isFilterAvailable = (id: string, manuallyDisabled: boolean) => {
     if (!manuallyDisabled) return false;
@@ -115,6 +118,23 @@ export const FloatingFilters = () => {
           }`}
         >
           <Layers className="w-4 h-4 sm:w-5 sm:h-5" />
+        </button>
+        
+        <button
+          onClick={() => {
+            if (!farmacias || farmacias.length === 0) {
+              toast.error('Buscando farmacias en vivo...');
+            }
+            setShowFarmacias(!showFarmacias);
+          }}
+          title={showFarmacias ? "Ocultar Farmacias de Turno" : "Ver Farmacias de Turno"}
+          className={`p-2 sm:p-3 min-w-[44px] min-h-[44px] flex items-center justify-center rounded-lg sm:rounded-xl transition-all ${
+            showFarmacias
+              ? 'bg-emerald-500 text-white shadow-md scale-105'
+              : 'bg-slate-100 dark:bg-slate-800 text-emerald-600 hover:bg-slate-200 dark:hover:bg-slate-700'
+          }`}
+        >
+          <Cross className="w-4 h-4 sm:w-5 sm:h-5" />
         </button>
       </div>
 
