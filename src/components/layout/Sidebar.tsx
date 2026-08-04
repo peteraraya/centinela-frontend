@@ -1,6 +1,6 @@
 import { useFilterStore } from '../../store/useFilterStore';
 import { SearchBar } from '../filters/SearchBar';
-import { MapPin, Globe, ChevronDown, ChevronUp, X, Flame, Car, Zap, AlertTriangle, CloudRain, Activity } from 'lucide-react';
+import { MapPin, Globe, ChevronDown, ChevronUp, X, Flame, Car, Zap, AlertTriangle, CloudRain, Activity, Info } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useIncidents } from '../../hooks/useIncidents';
 import { useEarthquakes } from '../../hooks/useEarthquakes';
@@ -8,12 +8,16 @@ import type { Incident } from '../../types';
 import type { Earthquake } from '../../hooks/useEarthquakes';
 import { useRef } from 'react';
 
+import { Cone } from 'lucide-react';
+
 const FILTERS = [
   { id: 'alert', i18nKey: 'filters.alert', icon: AlertTriangle, color: 'text-teal-500' },
   { id: 'fire', i18nKey: 'filters.fire', icon: Flame, color: 'text-red-500' },
-  { id: 'accident', i18nKey: 'filters.accident', icon: Car, color: 'text-orange-500' },
-  { id: 'utility', i18nKey: 'filters.utility', icon: Zap, color: 'text-yellow-500' },
-  { id: 'rain', i18nKey: 'filters.rain', icon: CloudRain, color: 'text-blue-500' },
+  { id: 'traffic', i18nKey: 'filters.accident', icon: Car, color: 'text-orange-500' },
+  { id: 'jam', i18nKey: 'filters.jam', icon: Cone, color: 'text-rose-500' },
+  { id: 'weather', i18nKey: 'filters.rain', icon: CloudRain, color: 'text-blue-500' },
+  { id: 'notice', i18nKey: 'filters.notice', icon: Info, color: 'text-indigo-500' },
+  { id: 'power', i18nKey: 'filters.power', icon: Zap, color: 'text-yellow-500' },
   { id: 'earthquake', i18nKey: 'filters.earthquake', icon: Activity, color: 'text-purple-500' }
 ];
 
@@ -107,6 +111,35 @@ export const Sidebar = ({ onClose }: { onClose?: () => void }) => {
           }} />
         </section>
 
+        {/* Safe Zone Radius Selector */}
+        <section className="shrink-0 mb-2 sm:mb-3">
+          <div className="bg-white dark:bg-slate-800 p-3 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm">
+            <div className="flex justify-between items-center mb-2">
+              <label className="text-[10px] sm:text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-widest flex items-center gap-1.5">
+                <MapPin className="w-3.5 h-3.5" />
+                Radio de Zona Cero
+              </label>
+              <span className="text-xs font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-900/30 px-2 py-0.5 rounded-full">
+                {useFilterStore.getState().safeZoneRadiusKm} km
+              </span>
+            </div>
+            <input 
+              type="range" 
+              min="1" 
+              max="100" 
+              step="1"
+              value={useFilterStore.getState().safeZoneRadiusKm}
+              onChange={(e) => useFilterStore.getState().setSafeZoneRadiusKm(Number(e.target.value))}
+              className="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer dark:bg-slate-700 accent-emerald-500"
+            />
+            <div className="flex justify-between text-[9px] text-slate-400 mt-1 font-medium px-1">
+              <span>1km</span>
+              <span>50km</span>
+              <span>100km</span>
+            </div>
+          </div>
+        </section>
+
         {/* Active Incidents Linear/Jira Style List */}
         <section className="flex-1 flex flex-col min-h-0">
           <div className="flex justify-between items-center mb-3 sm:mb-4 shrink-0">
@@ -119,6 +152,14 @@ export const Sidebar = ({ onClose }: { onClose?: () => void }) => {
           </div>
           
           <div className="flex-1 overflow-y-auto pr-2 space-y-5 custom-scrollbar">
+
+            {(!incidents || incidents.length === 0) && !earthquakes && (
+              <div className="space-y-4 animate-pulse mt-2">
+                {[1, 2, 3, 4].map((n) => (
+                  <div key={n} className="bg-slate-200 dark:bg-slate-800 rounded-xl h-24 w-full"></div>
+                ))}
+              </div>
+            )}
             
             {!hiddenFilters.includes('earthquake') && earthquakes && earthquakes.length > 0 && (
               <div className="space-y-2 sm:space-y-3">
@@ -160,7 +201,7 @@ export const Sidebar = ({ onClose }: { onClose?: () => void }) => {
                 <div key={filterGroup.id} className="space-y-2 sm:space-y-3">
                   <h3 className="text-[9px] sm:text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase border-b border-slate-100 dark:border-slate-800 pb-1.5 sm:pb-2 sticky top-0 bg-slate-50 dark:bg-slate-900 z-10 flex items-center gap-1.5 sm:gap-2">
                     <filterGroup.icon className={`w-3 h-3 sm:w-3.5 sm:h-3.5 ${filterGroup.color.split(' ')[0]}`} />
-                    {t(filterGroup.i18nKey)}
+                    {t(filterGroup.i18nKey) || (filterGroup.id === 'notice' ? 'Noticias Generales' : filterGroup.id)}
                   </h3>
                   
                   {groupIncidents.map((incident: Incident) => {
@@ -198,7 +239,9 @@ export const Sidebar = ({ onClose }: { onClose?: () => void }) => {
                       <div className="flex justify-between"><span className="font-semibold text-slate-700 dark:text-slate-400">{t('incident.reportedBy') || 'REPORTE'}:</span> <span className="text-right font-medium">{incident.details.reportedBy}</span></div>
                       <div className="flex justify-between"><span className="font-semibold text-slate-700 dark:text-slate-400">{t('incident.units') || 'UNIDADES'}:</span> <span className="font-medium">{incident.details.unitsDispatched}</span></div>
                       <div className="flex justify-between"><span className="font-semibold text-slate-700 dark:text-slate-400">{t('incident.affectedArea') || 'AFECTACIÓN'}:</span> <span className="text-right truncate max-w-[150px] font-medium">{incident.details.affectedArea}</span></div>
-                      <p className="text-slate-400 dark:text-slate-500 font-medium italic pt-2 text-[10px]">{t('incident.updated') || 'ACTUALIZADO'} {incident.details.lastUpdate}</p>
+                      <p className="text-slate-400 dark:text-slate-500 font-medium italic pt-2 text-[10px]">
+                        {t('incident.updated') || 'ACTUALIZADO'} {new Date(incident.details.lastUpdate).toLocaleString('es-CL', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' })}
+                      </p>
                     </div>
                   )}
                 </div>

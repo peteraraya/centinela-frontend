@@ -88,3 +88,10 @@ export const fetchBackendIncidents = async () => {
   if (!response.ok) throw new Error('Error al obtener incidentes del backend');
   return await response.json();
 };
+
+export const fetchNewsFeed = async () => {
+  const url = (import.meta.env.VITE_API_URL || 'http://localhost:3000/api/v1') + '/news';
+  const response = await fetch(url);
+  if (!response.ok) throw new Error('Error al obtener noticias del backend');
+  return await response.json();
+};

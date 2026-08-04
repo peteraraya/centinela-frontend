@@ -25,11 +25,12 @@ const createGeoJSONCircle = (center: [number, number], radiusInMeters: number, t
   ret.push(ret[0]); // close polygon
 
   let color = '#6b7280';
-  if (type === 'fire') color = '#ef4444';
-  if (type === 'accident') color = '#f97316';
-  if (type === 'utility') color = '#eab308';
-  if (type === 'rain') color = '#3b82f6';
-  if (type === 'earthquake') color = '#a855f7';
+  if (type === 'fire') color = '#ef4444'; // red-500
+  if (type === 'traffic') color = '#f97316'; // orange-500
+  if (type === 'jam') color = '#f43f5e'; // rose-500
+  if (type === 'power') color = '#eab308'; // yellow-500
+  if (type === 'weather') color = '#3b82f6'; // blue-500
+  if (type === 'earthquake') color = '#a855f7'; // purple-500
   if (type === 'alert') color = '#14b8a6'; // teal-500
   
   return {
@@ -44,12 +45,17 @@ const createGeoJSONCircle = (center: [number, number], radiusInMeters: number, t
   };
 };
 
+import { Info } from 'lucide-react';
+
 const getIconForType = (type: string) => {
   switch (type) {
     case 'fire': return <Flame className="w-6 h-6 text-red-500" />;
-    case 'accident': return <Car className="w-6 h-6 text-orange-500" />;
-    case 'utility': return <Zap className="w-6 h-6 text-yellow-500" />;
-    case 'rain': return <CloudRain className="w-6 h-6 text-blue-500" />;
+    case 'traffic': return <Car className="w-6 h-6 text-orange-500" />;
+    case 'power': return <Zap className="w-6 h-6 text-yellow-500" />;
+    case 'weather': return <CloudRain className="w-6 h-6 text-blue-500" />;
+    case 'alert': return <AlertTriangle className="w-6 h-6 text-teal-500" />;
+    case 'earthquake': return <Activity className="w-6 h-6 text-purple-500" />;
+    case 'notice': return <Info className="w-6 h-6 text-indigo-500" />;
     default: return <AlertTriangle className="w-6 h-6 text-gray-500" />;
   }
 };
@@ -61,18 +67,27 @@ import { useEarthquakes } from '../../hooks/useEarthquakes';
 import type { Earthquake } from '../../hooks/useEarthquakes';
 import type { Incident } from '../../types';
 import { useAccessibilityStore } from '../../store/useAccessibilityStore';
+import { calculateDistance } from '../../utils/distance';
 
 export const MapContainer = () => {
   const { t } = useTranslation();
   const { data: incidents, isLoading } = useIncidents();
   const { data: earthquakes } = useEarthquakes();
-  const { hiddenFilters, mapView, setMapView, selectedIncidentId, setSelectedIncidentId, flyToLocation, setFlyToLocation, mapType, hoveredIncidentId } = useFilterStore();
+  const { hiddenFilters, mapView, setMapView, selectedIncidentId, setSelectedIncidentId, flyToLocation, setFlyToLocation, mapType, hoveredIncidentId, userLocation, userLocationName, timeFilterHours, safeZoneRadiusKm, isHeatmap } = useFilterStore();
   const { theme } = useAccessibilityStore();
   
   const mapRef = useRef<MapRef>(null);
 
   // Sync state selectedIncident to local for Popup rendering
   const selectedIncident = incidents?.find(i => i.id === selectedIncidentId) || null;
+
+  const [showZoneBanner, setShowZoneBanner] = useState(true);
+
+  const filteredEarthquakes = useMemo(() => {
+    if (!earthquakes) return [];
+    const limitTime = Date.now() - (timeFilterHours * 60 * 60 * 1000);
+    return earthquakes.filter(eq => eq.properties.time >= limitTime);
+  }, [earthquakes, timeFilterHours]);
 
   const points = useMemo(() => {
     const incidentPoints = incidents
@@ -86,8 +101,8 @@ export const MapContainer = () => {
         }
       })) || [];
 
-    const eqPoints = (!hiddenFilters.includes('earthquake') && earthquakes)
-      ? earthquakes.map(eq => ({
+    const eqPoints = (!hiddenFilters.includes('earthquake'))
+      ? filteredEarthquakes.map(eq => ({
           type: 'Feature' as const,
           properties: { cluster: false, earthquakeId: eq.id, category: 'earthquake', eq },
           geometry: {
@@ -98,7 +113,7 @@ export const MapContainer = () => {
       : [];
 
     return [...incidentPoints, ...eqPoints];
-  }, [incidents, earthquakes, hiddenFilters]);
+  }, [incidents, filteredEarthquakes, hiddenFilters]);
 
   const [bounds, setBounds] = useState<BBox | null>(null);
   const [zoom, setZoom] = useState(mapView.zoom);
@@ -116,15 +131,54 @@ export const MapContainer = () => {
       .filter(i => i.radius)
       .map(i => createGeoJSONCircle(i.coordinates, i.radius!, i.type)) || [];
 
-    const eqFeatures = !hiddenFilters.includes('earthquake') && earthquakes
-      ? earthquakes.map(eq => createGeoJSONCircle([eq.geometry.coordinates[0], eq.geometry.coordinates[1]], Math.max(eq.properties.mag * 2000, 5000), 'earthquake'))
+    const eqFeatures = !hiddenFilters.includes('earthquake')
+      ? filteredEarthquakes.map(eq => createGeoJSONCircle([eq.geometry.coordinates[0], eq.geometry.coordinates[1]], Math.max(eq.properties.mag * 2000, 5000), 'earthquake'))
       : [];
+
+    const userZoneFeature = userLocation 
+      ? [createGeoJSONCircle([userLocation.longitude, userLocation.latitude], safeZoneRadiusKm * 1000, 'safezone')]
+      : [];
+
+    const polylineFeatures = incidents
+      ?.filter(i => !hiddenFilters.includes(i.type))
+      .filter(i => i.line && i.line.length > 1)
+      .map(i => ({
+        type: 'Feature',
+        geometry: {
+          type: 'LineString',
+          coordinates: i.line
+        },
+        properties: {
+          color: i.type === 'jam' ? '#f43f5e' : '#f97316',
+          isPolyline: true
+        }
+      })) || [];
 
     return {
       type: 'FeatureCollection',
-      features: [...incidentFeatures, ...eqFeatures]
+      features: [...incidentFeatures, ...eqFeatures, ...userZoneFeature, ...polylineFeatures]
     };
-  }, [incidents, earthquakes, hiddenFilters]);
+  }, [incidents, filteredEarthquakes, hiddenFilters, userLocation, safeZoneRadiusKm]);
+
+  // Calcular riesgos cercanos
+  const nearbyRisksCount = useMemo(() => {
+    if (!userLocation) return 0;
+    let count = 0;
+    
+    incidents?.filter(i => !hiddenFilters.includes(i.type)).forEach(incident => {
+      const dist = calculateDistance(userLocation.latitude, userLocation.longitude, incident.coordinates[1], incident.coordinates[0]);
+      if (dist <= safeZoneRadiusKm) count++;
+    });
+
+    if (!hiddenFilters.includes('earthquake')) {
+      filteredEarthquakes.forEach(eq => {
+        const dist = calculateDistance(userLocation.latitude, userLocation.longitude, eq.geometry.coordinates[1], eq.geometry.coordinates[0]);
+        if (dist <= safeZoneRadiusKm) count++;
+      });
+    }
+    
+    return count;
+  }, [userLocation, incidents, filteredEarthquakes, hiddenFilters, safeZoneRadiusKm]);
 
   useEffect(() => {
     if (mapRef.current && flyToLocation) {
@@ -140,8 +194,31 @@ export const MapContainer = () => {
     }
   }, [flyToLocation, setFlyToLocation, setMapView]);
 
+  useEffect(() => {
+    setShowZoneBanner(true);
+    const timer = setTimeout(() => setShowZoneBanner(false), 8000);
+    return () => clearTimeout(timer);
+  }, [userLocation, safeZoneRadiusKm, nearbyRisksCount]);
+
   return (
     <div className="w-full h-full relative">
+      {userLocation && showZoneBanner && (
+        <div className="absolute top-4 sm:top-6 left-1/2 -translate-x-1/2 z-20 pointer-events-none transition-all animate-in fade-in slide-in-from-top-4 duration-500">
+          <div className={`px-4 py-2 rounded-full shadow-lg border backdrop-blur-md flex items-center gap-2 ${
+            nearbyRisksCount > 0 
+              ? 'bg-red-500/90 border-red-400 text-white animate-pulse' 
+              : 'bg-emerald-500/90 border-emerald-400 text-white'
+          }`}>
+            <MapPin className="w-4 h-4" />
+            <span className="text-xs sm:text-sm font-bold">
+              {nearbyRisksCount > 0 
+                ? `⚠️ Tienes ${nearbyRisksCount} alerta(s) a menos de ${safeZoneRadiusKm}km de ${userLocationName ? userLocationName.split(',')[0] : 'ti'}`
+                : `No hay incidentes a ${safeZoneRadiusKm}km de ${userLocationName ? userLocationName.split(',')[0] : 'tu ubicación'}`}
+            </span>
+          </div>
+        </div>
+      )}
+
       <Map
         ref={mapRef}
         initialViewState={mapView}
@@ -184,30 +261,80 @@ export const MapContainer = () => {
       >
         <div className="absolute bottom-36 sm:bottom-28 right-4 sm:right-6 z-10 flex flex-col gap-2">
           <GeolocateControl position="top-right" style={{ position: 'relative', margin: 0, padding: 0 }} />
-          <NavigationControl position="top-right" style={{ position: 'relative', margin: 0, padding: 0 }} />
+          <NavigationControl position="top-right" style={{ position: 'relative', margin: 0, padding: 0 }} visualizePitch={true} />
         </div>
 
         <Source id="affected-zones" type="geojson" data={geoJsonData as never}>
-          <Layer
-            id="affected-zones-fill"
-            type="fill"
-            paint={{
-              'fill-color': ['get', 'color'],
-              'fill-opacity': 0.2
-            }}
-          />
-          <Layer
-            id="affected-zones-line"
-            type="line"
-            paint={{
-              'line-color': ['get', 'color'],
-              'line-width': 2,
-              'line-opacity': 0.8
-            }}
-          />
+          {isHeatmap && (
+            <Layer
+              id="incidents-heatmap"
+              type="heatmap"
+              paint={{
+                'heatmap-weight': 1,
+                'heatmap-intensity': 1,
+                'heatmap-color': [
+                  'interpolate',
+                  ['linear'],
+                  ['heatmap-density'],
+                  0, 'rgba(33,102,172,0)',
+                  0.2, 'rgb(103,169,207)',
+                  0.4, 'rgb(209,229,240)',
+                  0.6, 'rgb(253,219,199)',
+                  0.8, 'rgb(239,138,98)',
+                  1, 'rgb(178,24,43)'
+                ],
+                'heatmap-radius': 30,
+                'heatmap-opacity': 0.8
+              }}
+            />
+          )}
+
+          {!isHeatmap && (
+            <Layer
+              id="affected-zones-fill"
+              type="fill"
+              filter={['!=', ['get', 'isPolyline'], true]}
+              paint={{
+                'fill-color': [
+                  'case',
+                  ['==', ['get', 'color'], '#6b7280'], '#10b981', // safezone green override
+                  ['get', 'color']
+                ],
+                'fill-opacity': [
+                  'case',
+                  ['==', ['get', 'color'], '#6b7280'], 0.05, // less opacity for safezone
+                  0.2
+                ]
+              }}
+            />
+          )}
+          {!isHeatmap && (
+            <Layer
+              id="affected-zones-line"
+              type="line"
+              paint={{
+                'line-color': [
+                  'case',
+                  ['==', ['get', 'color'], '#6b7280'], '#10b981', // safezone green border
+                  ['get', 'color']
+                ],
+                'line-width': [
+                  'case',
+                  ['==', ['get', 'isPolyline'], true], 5, // thicker for jam lines
+                  ['==', ['get', 'color'], '#6b7280'], 1, // thinner border for safezone
+                  2
+                ],
+                'line-opacity': [
+                  'case',
+                  ['==', ['get', 'isPolyline'], true], 0.9,
+                  0.8
+                ]
+              }}
+            />
+          )}
         </Source>
 
-        {clusters.map(cluster => {
+        {!isHeatmap && clusters.map(cluster => {
           const [longitude, latitude] = cluster.geometry.coordinates;
           const { cluster: isCluster, point_count: pointCount } = cluster.properties as { cluster?: boolean; point_count?: number; category?: string; incident?: Incident; eq?: Earthquake; earthquakeId?: string };
 
@@ -396,7 +523,9 @@ export const MapContainer = () => {
                   </div>
                   <div className="flex justify-between items-center">
                     <span className="font-bold text-[8px] tracking-wider text-slate-400 dark:text-slate-500 uppercase">ACTUALIZADO:</span> 
-                    <span className="text-blue-600 dark:text-blue-400 font-medium">{selectedIncident.details.lastUpdate}</span>
+                    <span className="text-blue-600 dark:text-blue-400 font-medium">
+                      {new Date(selectedIncident.details.lastUpdate).toLocaleString('es-CL', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' })}
+                    </span>
                   </div>
                 </div>
               )}
@@ -424,6 +553,71 @@ export const MapContainer = () => {
           </div>
         </div>
       )}
+
+      {/* Minimap Inset */}
+      {!isHeatmap && (
+        <div className="absolute bottom-6 left-6 w-32 h-24 sm:w-48 sm:h-32 rounded-xl overflow-hidden shadow-xl border-2 border-white dark:border-slate-800 z-10 pointer-events-none hidden md:block">
+          <Map
+            initialViewState={{
+              longitude: -70.64827,
+              latitude: -33.45694,
+              zoom: 3
+            }}
+            mapStyle={{
+              version: 8,
+              sources: {
+                basemap: {
+                  type: 'raster',
+                  tiles: [
+                    theme === 'dark' 
+                      ? 'https://a.basemaps.cartocdn.com/rastertiles/dark_all/{z}/{x}/{y}@2x.png'
+                      : 'https://a.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}@2x.png'
+                  ],
+                  tileSize: 256
+                }
+              },
+              layers: [
+                { id: 'basemap', type: 'raster', source: 'basemap' }
+              ]
+            }}
+            interactive={false}
+          >
+            {/* Viewport indicator box */}
+            <Source id="viewport-box" type="geojson" data={{
+              type: 'Feature',
+              geometry: {
+                type: 'Polygon',
+                coordinates: bounds ? [[
+                  [bounds[0], bounds[1]],
+                  [bounds[2], bounds[1]],
+                  [bounds[2], bounds[3]],
+                  [bounds[0], bounds[3]],
+                  [bounds[0], bounds[1]]
+                ]] : []
+              },
+              properties: {}
+            }}>
+              <Layer
+                id="viewport-fill"
+                type="fill"
+                paint={{
+                  'fill-color': '#ef4444',
+                  'fill-opacity': 0.2
+                }}
+              />
+              <Layer
+                id="viewport-line"
+                type="line"
+                paint={{
+                  'line-color': '#ef4444',
+                  'line-width': 2
+                }}
+              />
+            </Source>
+          </Map>
+        </div>
+      )}
+
     </div>
   );
 };
