@@ -34,10 +34,10 @@ export const FloatingFilters = () => {
   };
 
   return (
-    <div className="absolute right-4 top-1/2 -translate-y-1/2 z-20 flex flex-col gap-4 max-h-[90vh] overflow-y-auto no-scrollbar pointer-events-auto">
+    <div className="absolute right-4 top-20 sm:top-24 z-20 flex flex-col gap-3 sm:gap-4 max-h-[calc(100vh-6rem)] overflow-y-auto no-scrollbar pointer-events-auto pb-4 items-end">
       
       {/* Incident Types */}
-      <div className="bg-white/90 dark:bg-slate-900/90 backdrop-blur-md p-1.5 sm:p-2 rounded-xl sm:rounded-2xl shadow-lg border border-slate-200 dark:border-slate-800 flex flex-col gap-1 sm:gap-2">
+      <div className="bg-white/90 dark:bg-slate-900/90 backdrop-blur-md p-1.5 sm:p-2 rounded-xl sm:rounded-2xl shadow-lg border border-slate-200 dark:border-slate-800 flex flex-col gap-1 sm:gap-2 w-fit">
         {FILTERS.map((filter) => {
           const Icon = filter.icon;
           const hasData = isFilterAvailable(filter.id, filter.available);
@@ -79,7 +79,7 @@ export const FloatingFilters = () => {
       </div>
 
       {/* Focus / Sound controls */}
-      <div className="bg-white/90 dark:bg-slate-900/90 backdrop-blur-md p-1.5 sm:p-2 rounded-xl sm:rounded-2xl shadow-lg border border-slate-200 dark:border-slate-800 flex flex-col gap-1 sm:gap-2">
+      <div className="bg-white/90 dark:bg-slate-900/90 backdrop-blur-md p-1.5 sm:p-2 rounded-xl sm:rounded-2xl shadow-lg border border-slate-200 dark:border-slate-800 grid grid-cols-2 gap-1 sm:gap-2 w-fit">
         <button
           onClick={() => setSoundEnabled(!soundEnabled)}
           title={soundEnabled ? "Silenciar alertas sonoras" : "Activar alertas sonoras"}
@@ -103,7 +103,7 @@ export const FloatingFilters = () => {
         <button
           onClick={() => setShowStatusBoard(true)}
           title="Ver Resumen Nacional"
-          className="p-2 sm:p-3 min-w-[44px] min-h-[44px] flex items-center justify-center rounded-lg sm:rounded-xl transition-all bg-blue-100 text-blue-600 hover:bg-blue-500 hover:text-white dark:bg-blue-900/30 dark:text-blue-400 dark:hover:bg-blue-600 dark:hover:text-white"
+          className="col-span-2 p-2 sm:p-3 min-w-[44px] min-h-[44px] flex items-center justify-center rounded-lg sm:rounded-xl transition-all bg-blue-100 text-blue-600 hover:bg-blue-500 hover:text-white dark:bg-blue-900/30 dark:text-blue-400 dark:hover:bg-blue-600 dark:hover:text-white"
         >
           <BarChart3 className="w-4 h-4 sm:w-5 sm:h-5" />
         </button>

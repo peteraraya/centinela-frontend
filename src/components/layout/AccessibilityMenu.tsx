@@ -9,18 +9,10 @@ export const AccessibilityMenu = () => {
   const [isOpen, setIsOpen] = useState(false);
 
   return (
-    <div className="absolute top-4 sm:top-6 right-14 sm:right-6 z-40 flex flex-col items-end gap-2">
-      <button 
-        onClick={() => setIsOpen(!isOpen)}
-        className="bg-white dark:bg-slate-800 p-2 sm:p-3 min-w-[44px] min-h-[44px] flex items-center justify-center rounded-full shadow-lg border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500"
-        aria-label="Menú de accesibilidad"
-        title="Opciones de Accesibilidad"
-      >
-        <Settings2 className="w-5 h-5" />
-      </button>
-
+    <div className="absolute bottom-4 sm:bottom-6 right-4 sm:right-6 z-40 flex flex-col items-end gap-2">
+      
       {isOpen && (
-        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-xl border border-gray-200 dark:border-gray-700 p-2 flex flex-col gap-1 w-48 animate-in fade-in zoom-in duration-200">
+        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-xl border border-gray-200 dark:border-gray-700 p-2 flex flex-col gap-1 w-48 animate-in fade-in zoom-in duration-200 mb-2">
           <div className="px-3 py-2 border-b border-gray-100 dark:border-gray-700 mb-1">
             <span className="text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">
               Visualización
@@ -95,6 +87,15 @@ export const AccessibilityMenu = () => {
           </button>
         </div>
       )}
+
+      <button 
+        onClick={() => setIsOpen(!isOpen)}
+        className="bg-white dark:bg-slate-800 p-2 sm:p-3 min-w-[44px] min-h-[44px] flex items-center justify-center rounded-full shadow-lg border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500"
+        aria-label="Menú de accesibilidad"
+        title="Opciones de Accesibilidad"
+      >
+        <Settings2 className="w-5 h-5" />
+      </button>
     </div>
   );
 };
