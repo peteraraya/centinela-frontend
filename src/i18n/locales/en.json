@@ -17,11 +17,16 @@
     "wind": "Wind"
   },
   "filters": {
+    "alert": "Alerts",
     "fire": "Fires",
-    "accident": "Accidents",
-    "utility": "Utility Outages",
-    "rain": "Rain / Floods",
-    "earthquake": "Earthquakes (USGS)"
+    "accident": "Traffic & Accidents",
+    "jam": "Traffic Jams",
+    "power": "Power Outages",
+    "rain": "Weather & Rain",
+    "earthquake": "Earthquakes (USGS)",
+    "notice": "General Notices",
+    "notAvailable": "Data not available. Official integration pending.",
+    "noIncidents": "No active incidents of this type at the moment."
   },
   "incident": {
     "status": "Status",

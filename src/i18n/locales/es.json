@@ -19,10 +19,14 @@
   "filters": {
     "alert": "Alertas",
     "fire": "Incendios",
-    "accident": "Accidentes",
-    "utility": "Cortes Suministro",
-    "rain": "Lluvias",
-    "earthquake": "Sismos (USGS)"
+    "accident": "Tráfico y Accidentes",
+    "jam": "Tacos y Congestión",
+    "power": "Cortes Suministro",
+    "rain": "Clima y Lluvias",
+    "earthquake": "Sismos (USGS)",
+    "notice": "Noticias Generales",
+    "notAvailable": "Datos no disponibles. Pendiente integración oficial.",
+    "noIncidents": "No hay incidentes activos de este tipo en este momento."
   },
   "incident": {
     "status": "Estado",

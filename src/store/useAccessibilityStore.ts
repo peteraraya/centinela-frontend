@@ -13,7 +13,7 @@ interface AccessibilityState {
 export const useAccessibilityStore = create<AccessibilityState>()(
   persist(
     (set) => ({
-      theme: 'light',
+      theme: 'dark',
       setTheme: (theme) => set({ theme }),
       fontSize: 'normal',
       toggleFontSize: () => set((state) => ({ fontSize: state.fontSize === 'normal' ? 'large' : 'normal' })),

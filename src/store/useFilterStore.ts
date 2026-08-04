@@ -18,12 +18,26 @@ interface FilterState {
   setMapType: (type: 'street' | 'satellite') => void;
   userLocationName: string | null;
   setUserLocationName: (name: string | null) => void;
+  panicMode: boolean;
+  setPanicMode: (active: boolean) => void;
+  showStatusBoard: boolean;
+  setShowStatusBoard: (show: boolean) => void;
+  timeFilterHours: number; // 0 means all time (or default limit), else max hours ago
+  setTimeFilterHours: (hours: number) => void;
+  userLocation: { latitude: number; longitude: number } | null;
+  setUserLocation: (loc: { latitude: number; longitude: number } | null) => void;
+  soundEnabled: boolean;
+  setSoundEnabled: (enabled: boolean) => void;
+  safeZoneRadiusKm: number;
+  setSafeZoneRadiusKm: (km: number) => void;
+  isHeatmap: boolean;
+  setIsHeatmap: (active: boolean) => void;
 }
 
 export const useFilterStore = create<FilterState>()(
   persist(
     (set) => ({
-      hiddenFilters: ['alert', 'fire', 'accident', 'utility', 'earthquake'],
+      hiddenFilters: [], 
       toggleFilter: (filter) =>
         set((state) => ({
           hiddenFilters: state.hiddenFilters.includes(filter)
@@ -45,14 +59,34 @@ export const useFilterStore = create<FilterState>()(
       setSelectedIncidentId: (id) => set({ selectedIncidentId: id }),
       hoveredIncidentId: null,
       setHoveredIncidentId: (id) => set({ hoveredIncidentId: id }),
-      mapType: 'street',
+      mapType: 'satellite',
       setMapType: (type) => set({ mapType: type }),
       userLocationName: null,
       setUserLocationName: (name) => set({ userLocationName: name }),
+      panicMode: false,
+      setPanicMode: (active) => set({ panicMode: active }),
+      showStatusBoard: false,
+      setShowStatusBoard: (show) => set({ showStatusBoard: show }),
+      timeFilterHours: 24 * 30, // Default to 30 days (what USGS returns by default mostly)
+      setTimeFilterHours: (hours) => set({ timeFilterHours: hours }),
+      userLocation: null,
+      setUserLocation: (loc) => set({ userLocation: loc }),
+      soundEnabled: true,
+      setSoundEnabled: (enabled) => set({ soundEnabled: enabled }),
+      safeZoneRadiusKm: 5,
+      setSafeZoneRadiusKm: (km) => set({ safeZoneRadiusKm: km }),
+      isHeatmap: false,
+      setIsHeatmap: (active) => set({ isHeatmap: active }),
     }),
     {
       name: 'filter-storage',
-      partialize: (state) => ({ hiddenFilters: state.hiddenFilters, hiddenSeverities: state.hiddenSeverities }),
+      partialize: (state) => ({ 
+        hiddenFilters: state.hiddenFilters, 
+        hiddenSeverities: state.hiddenSeverities,
+        soundEnabled: state.soundEnabled,
+        timeFilterHours: state.timeFilterHours,
+        safeZoneRadiusKm: state.safeZoneRadiusKm
+      }),
     }
   )
 );
