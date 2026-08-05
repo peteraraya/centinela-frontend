@@ -82,38 +82,41 @@ export const Sidebar = ({ onClose }: { onClose?: () => void }) => {
   const filteredIncidents = incidents?.filter(i => !hiddenFilters.includes(i.type) && !hiddenSeverities.includes(i.severity)) || [];
 
   return (
-    <div className="w-full h-full bg-slate-50 dark:bg-slate-900 shadow-[2px_0_20px_-5px_rgba(0,0,0,0.1)] z-10 flex flex-col border-r border-slate-200 dark:border-slate-800 transition-colors duration-300">
+    <div className="w-full h-full bg-slate-50 dark:bg-slate-900 xl:shadow-[2px_0_20px_-5px_rgba(0,0,0,0.1)] z-10 flex flex-col xl:border-r border-slate-200 dark:border-slate-800 transition-colors duration-300">
       
       {/* Header Premium */}
-      <div className="px-4 sm:px-6 pt-5 pb-4 sm:py-8 bg-white dark:bg-slate-900 border-b border-slate-100 dark:border-slate-800 relative shrink-0">
+      <div className="px-3 sm:px-4 pt-3 pb-3 sm:py-5 bg-white dark:bg-slate-900 border-b border-slate-100 dark:border-slate-800 relative shrink-0">
         <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-blue-600 via-purple-500 to-red-500" />
         
-        <div className="flex flex-col-reverse sm:flex-row sm:items-center justify-between w-full relative z-10 gap-3 sm:gap-0">
-          <div className="mt-2 sm:mt-0">
-            <h1 className="text-xl sm:text-2xl font-extrabold flex items-center gap-2 tracking-tight text-slate-900 dark:text-white">
-              <div className="p-1.5 sm:p-2 bg-blue-600 rounded-lg shadow-sm shrink-0">
-                <MapPin className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
+        {/* Mobile Drag Handle */}
+        <div className="xl:hidden w-12 h-1.5 bg-slate-200 dark:bg-slate-700 rounded-full mx-auto mb-3" />
+
+        <div className="flex flex-row items-start justify-between w-full relative z-10 gap-2">
+          <div className="flex-1 min-w-0">
+            <h1 className="text-lg sm:text-xl font-extrabold flex items-center gap-2 tracking-tight text-slate-900 dark:text-white">
+              <div className="p-1.5 bg-blue-600 rounded-lg shadow-sm shrink-0">
+                <MapPin className="w-4 h-4 text-white" />
               </div>
-              {t('app.title')}
+              <span className="truncate">{t('app.title')}</span>
             </h1>
-            <p className="text-slate-500 dark:text-slate-400 text-xs sm:text-sm mt-1.5 sm:mt-2 font-medium">{t('app.subtitle')}</p>
+            <p className="text-slate-500 dark:text-slate-400 text-[10px] sm:text-xs mt-1.5 font-medium truncate">{t('app.subtitle')}</p>
           </div>
 
-          <div className="flex items-center gap-1.5 sm:gap-2 self-end sm:self-auto">
+          <div className="flex items-center gap-1 shrink-0">
             <button 
               onClick={toggleLanguage}
-              className="p-2 w-[44px] h-[44px] rounded-full bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 transition-colors flex items-center justify-center"
+              className="p-1.5 w-[36px] h-[36px] rounded-full bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 transition-colors flex items-center justify-center"
               title="Cambiar idioma / Change language"
             >
-              <Globe className="w-5 h-5" />
+              <Globe className="w-4 h-4" />
             </button>
             {onClose && (
               <button 
                 onClick={onClose}
-                className="xl:hidden p-2 min-w-[44px] min-h-[44px] rounded-full bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 transition-colors flex items-center justify-center"
+                className="xl:hidden p-1.5 w-[36px] h-[36px] rounded-full bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 transition-colors flex items-center justify-center"
                 aria-label="Cerrar menú"
               >
-                <X className="w-6 h-6" />
+                <X className="w-5 h-5" />
               </button>
             )}
           </div>

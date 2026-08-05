@@ -3,7 +3,7 @@ import Map, { Marker, Popup, Source, Layer, NavigationControl, GeolocateControl 
 import type { MapRef } from 'react-map-gl/maplibre';
 import 'maplibre-gl/dist/maplibre-gl.css';
 import { useIncidents } from '../../hooks/useIncidents';
-import { Flame, Car, Zap, AlertTriangle, CloudRain, Activity, Link as LinkIcon, MapPin } from 'lucide-react';
+import { Flame, Car, Zap, AlertTriangle, CloudRain, Activity, Link as LinkIcon, MapPin, X } from 'lucide-react';
 import useSupercluster from 'use-supercluster';
 
 type BBox = [number, number, number, number];
@@ -274,10 +274,11 @@ export const MapContainer = () => {
         }}
         style={{ width: '100%', height: '100%' }}
       >
-        <div className="absolute bottom-36 sm:bottom-28 right-4 sm:right-6 z-10 flex flex-col gap-2">
-          <GeolocateControl position="top-right" style={{ position: 'relative', margin: 0, padding: 0 }} />
-          <NavigationControl position="top-right" style={{ position: 'relative', margin: 0, padding: 0 }} visualizePitch={true} />
+        <div className="hidden">
+          {/* Map controls are positioned by Maplibre natively */}
         </div>
+        <GeolocateControl position="bottom-right" />
+        <NavigationControl position="bottom-right" visualizePitch={true} />
 
         <Source id="affected-zones" type="geojson" data={geoJsonData as never}>
           {isHeatmap && (
@@ -403,7 +404,7 @@ export const MapContainer = () => {
                   {(incident.severity === 'critical' || isHovered) && (
                     <div className={`absolute inset-0 rounded-full animate-ping opacity-75 ${isHovered ? 'bg-blue-400' : 'bg-red-500'}`}></div>
                   )}
-                  <div className={`relative cursor-pointer bg-white dark:bg-gray-800 rounded-full p-1 shadow-md border ${isHovered ? 'border-blue-500 dark:border-blue-400' : 'border-gray-200 dark:border-gray-700'}`}>
+                  <div className={`relative cursor-pointer bg-white dark:bg-gray-800 rounded-full p-1 border ${isHovered ? 'border-blue-500 dark:border-blue-400' : 'border-gray-200 dark:border-gray-700'} ${incident.severity === 'critical' ? 'shadow-[0_0_15px_rgba(239,68,68,0.8)] dark:shadow-[0_0_20px_rgba(239,68,68,0.6)]' : 'shadow-md'} transition-shadow duration-300`}>
                     {getIconForType(incident.type)}
                   </div>
                 </div>
@@ -636,6 +637,127 @@ export const MapContainer = () => {
         <div className="absolute inset-0 bg-white/50 dark:bg-black/50 flex items-center justify-center pointer-events-none transition-colors duration-300">
           <div className="text-xl font-bold text-blue-600 dark:text-blue-400 animate-pulse">
             {t('app.loading')}
+          </div>
+        </div>
+      )}
+
+      {/* Incident / Farmacia Details Bottom Card */}
+      {(selectedIncident || selectedFarmacia) && (
+        <div className="absolute inset-x-0 bottom-0 sm:bottom-6 sm:left-1/2 sm:-translate-x-1/2 sm:w-[400px] z-[50] pointer-events-auto transition-transform duration-300 translate-y-0 bg-white dark:bg-slate-900 rounded-t-3xl sm:rounded-2xl shadow-[0_-10px_40px_rgba(0,0,0,0.2)] sm:shadow-2xl border-t sm:border border-slate-200 dark:border-slate-800 animate-in slide-in-from-bottom-full pb-safe">
+          <div className="w-12 h-1.5 bg-slate-200 dark:bg-slate-700 rounded-full mx-auto mt-3 mb-2 sm:hidden" />
+          <div className="px-5 pb-5 pt-2 sm:pt-5 max-h-[40vh] overflow-y-auto custom-scrollbar relative">
+            <button 
+              onClick={() => {
+                setSelectedIncidentId(null);
+                setSelectedFarmacia(null);
+              }}
+              className="absolute top-2 right-4 p-1.5 rounded-full bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-500 transition-colors"
+            >
+              <X className="w-4 h-4" />
+            </button>
+            
+            {selectedFarmacia && (
+              <>
+                <div className="flex items-start gap-3 mb-3 pr-8">
+                  <div className="p-2 rounded-xl bg-emerald-100 dark:bg-emerald-900/50 shrink-0">
+                    <Cross className="w-6 h-6 text-emerald-600 dark:text-emerald-400" />
+                  </div>
+                  <div>
+                    <h3 className="font-bold text-base text-slate-900 dark:text-white leading-tight">{selectedFarmacia.nombre}</h3>
+                    <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">{selectedFarmacia.direccion}, {selectedFarmacia.comuna}</p>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-2 gap-2 mt-4">
+                  <div className="p-3 bg-slate-50 dark:bg-slate-800/50 rounded-xl border border-slate-100 dark:border-slate-700/50">
+                    <span className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Apertura</span>
+                    <span className="font-semibold text-emerald-600 dark:text-emerald-400">{selectedFarmacia.horaApertura}</span>
+                  </div>
+                  <div className="p-3 bg-slate-50 dark:bg-slate-800/50 rounded-xl border border-slate-100 dark:border-slate-700/50">
+                    <span className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Cierre</span>
+                    <span className="font-semibold text-red-500">{selectedFarmacia.horaCierre}</span>
+                  </div>
+                </div>
+                
+                {selectedFarmacia.telefono && (
+                  <div className="mt-4 text-sm font-medium text-slate-700 dark:text-slate-300 flex items-center justify-center gap-2 py-3 bg-blue-50 dark:bg-blue-900/20 rounded-xl text-blue-600 dark:text-blue-400">
+                    📞 {selectedFarmacia.telefono}
+                  </div>
+                )}
+              </>
+            )}
+
+            {selectedIncident && (
+              <>
+                <div className="flex items-start gap-3 mb-3 pr-8">
+                  <div className="p-2 rounded-xl bg-slate-100 dark:bg-slate-800 shrink-0">
+                    {getIconForType(selectedIncident.type)}
+                  </div>
+                  <div>
+                    <h3 className="font-bold text-base text-slate-900 dark:text-white leading-tight">{selectedIncident.title}</h3>
+                    <div className="flex items-center gap-2 mt-1.5">
+                      <span className={`text-[10px] font-bold uppercase px-2 py-0.5 rounded-md ${
+                        {
+                          critical: 'bg-red-100 text-red-700 dark:bg-red-900/40 dark:text-red-400',
+                          high: 'bg-orange-100 text-orange-700 dark:bg-orange-900/40 dark:text-orange-400',
+                          medium: 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900/40 dark:text-yellow-400',
+                          low: 'bg-green-100 text-green-700 dark:bg-green-900/40 dark:text-green-400'
+                        }[selectedIncident.severity]
+                      }`}>{selectedIncident.severity}</span>
+                      <span className="text-xs text-slate-400">• {new Date(selectedIncident.timestamp).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</span>
+                    </div>
+                  </div>
+                </div>
+
+                <p className="text-sm text-slate-600 dark:text-slate-300 leading-relaxed mb-4">
+                  {selectedIncident.description}
+                </p>
+
+                {selectedIncident.details && (
+                  <div className="bg-slate-50 dark:bg-slate-800/50 rounded-xl p-3 border border-slate-100 dark:border-slate-700/50 grid grid-cols-2 gap-y-3 gap-x-2 text-xs mb-4">
+                    <div>
+                      <span className="block text-[9px] font-bold text-slate-400 uppercase tracking-wider mb-0.5">Estado</span>
+                      <span className="font-medium text-slate-700 dark:text-slate-300">{selectedIncident.details.status}</span>
+                    </div>
+                    <div>
+                      <span className="block text-[9px] font-bold text-slate-400 uppercase tracking-wider mb-0.5">Unidades</span>
+                      <span className="font-medium text-slate-700 dark:text-slate-300">{selectedIncident.details.unitsDispatched}</span>
+                    </div>
+                    <div className="col-span-2">
+                      <span className="block text-[9px] font-bold text-slate-400 uppercase tracking-wider mb-0.5">Fuente</span>
+                      <span className="font-medium text-slate-700 dark:text-slate-300">{selectedIncident.details.reportedBy}</span>
+                    </div>
+                  </div>
+                )}
+
+                <div className="flex items-center justify-between gap-2 pt-2">
+                  <span className="text-[10px] font-bold text-slate-400 uppercase">Compartir</span>
+                  <div className="flex items-center gap-2">
+                    <button 
+                      onClick={() => window.open(`https://wa.me/?text=${encodeURIComponent(`🚨 ${selectedIncident.title}\n📍 ${selectedIncident.description}\nhttps://maps.google.com/?q=${selectedIncident.coordinates[1]},${selectedIncident.coordinates[0]}`)}`, '_blank')}
+                      className="w-8 h-8 flex items-center justify-center bg-[#25D366]/10 text-[#25D366] hover:bg-[#25D366]/20 rounded-full transition-colors"
+                    >
+                      <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round"><path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z"></path></svg>
+                    </button>
+                    <button 
+                      onClick={() => window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(`🚨 ${selectedIncident.title}`)}`, '_blank')}
+                      className="w-8 h-8 flex items-center justify-center bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 rounded-full transition-colors"
+                    >
+                      <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round"><path d="M22 4s-.7 2.1-2 3.4c1.6 10-9.4 17.3-18 11.6 2.2.1 4.4-.6 6-2C3 15.5.5 9.6 3 5c2.2 2.6 5.6 4.1 9 4-.9-4.2 4-6.6 7-3.8 1.1 0 3-1.2 3-1.2z"></path></svg>
+                    </button>
+                    <button 
+                      onClick={() => {
+                        navigator.clipboard.writeText(`🚨 ${selectedIncident.title}\n📍 ${selectedIncident.description}\nhttps://maps.google.com/?q=${selectedIncident.coordinates[1]},${selectedIncident.coordinates[0]}`);
+                        toast.success('Enlace copiado');
+                      }}
+                      className="w-8 h-8 flex items-center justify-center bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 rounded-full transition-colors"
+                    >
+                      <LinkIcon className="w-4 h-4" />
+                    </button>
+                  </div>
+                </div>
+              </>
+            )}
           </div>
         </div>
       )}

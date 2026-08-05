@@ -37,16 +37,16 @@ export const StatusBoard = ({ onClose }: StatusBoardProps) => {
       <div className="bg-white dark:bg-slate-900 w-full max-w-2xl rounded-3xl shadow-2xl overflow-hidden border border-slate-200 dark:border-slate-800 animate-in zoom-in-95 duration-200">
         
         {/* Header */}
-        <div className="px-6 py-5 border-b border-slate-100 dark:border-slate-800 flex justify-between items-center bg-slate-50 dark:bg-slate-800/50">
-          <div>
-            <h2 className="text-xl sm:text-2xl font-black text-slate-900 dark:text-white">Resumen Nacional</h2>
-            <p className="text-sm text-slate-500 dark:text-slate-400 font-medium mt-1">Situación global del país en tiempo real</p>
+        <div className="px-4 sm:px-6 py-4 sm:py-5 border-b border-slate-100 dark:border-slate-800 flex justify-between items-start sm:items-center gap-3 bg-slate-50 dark:bg-slate-800/50">
+          <div className="flex-1 min-w-0">
+            <h2 className="text-lg sm:text-2xl font-black text-slate-900 dark:text-white truncate">Resumen Nacional</h2>
+            <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 font-medium mt-1 truncate">Situación global del país en tiempo real</p>
           </div>
           <button 
             onClick={onClose}
-            className="p-2 rounded-full hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors text-slate-500"
+            className="p-1.5 sm:p-2 shrink-0 rounded-full hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors text-slate-500"
           >
-            <X className="w-6 h-6" />
+            <X className="w-5 h-5 sm:w-6 sm:h-6" />
           </button>
         </div>
 

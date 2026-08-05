@@ -9,7 +9,7 @@ export const AccessibilityMenu = () => {
   const [isOpen, setIsOpen] = useState(false);
 
   return (
-    <div className="absolute bottom-4 sm:bottom-6 right-4 sm:right-6 z-40 flex flex-col items-end gap-2">
+    <div className="absolute bottom-8 sm:bottom-6 right-4 sm:right-6 z-40 flex flex-col items-end gap-2">
       
       {isOpen && (
         <div className="bg-white dark:bg-gray-800 rounded-xl shadow-xl border border-gray-200 dark:border-gray-700 p-2 flex flex-col gap-1 w-48 animate-in fade-in zoom-in duration-200 mb-2">

@@ -16,7 +16,7 @@ import { Focus, WifiOff } from 'lucide-react';
 function App() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const { theme, fontSize } = useAccessibilityStore();
-  const { setSelectedIncidentId, panicMode, setPanicMode, showStatusBoard, setShowStatusBoard, userLocation, setUserLocation, setFlyToLocation } = useFilterStore();
+  const { selectedIncidentId, setSelectedIncidentId, panicMode, setPanicMode, showStatusBoard, setShowStatusBoard, userLocation, setUserLocation, setFlyToLocation } = useFilterStore();
   const [isOffline, setIsOffline] = useState(!navigator.onLine);
   
   useEffect(() => {
@@ -87,8 +87,8 @@ function App() {
       {isOffline && (
         <div className="absolute top-4 left-1/2 -translate-x-1/2 z-[60] bg-orange-100/95 dark:bg-orange-900/95 text-orange-800 dark:text-orange-200 border border-orange-300 dark:border-orange-700 px-4 py-3 rounded-2xl shadow-xl w-[90%] max-w-md flex items-start gap-3 backdrop-blur-md animate-in slide-in-from-top-4">
           <WifiOff className="w-5 h-5 shrink-0 mt-0.5 text-orange-600 dark:text-orange-400" />
-          <div className="flex flex-col">
-            <span className="font-bold text-sm">Sin conexión a Internet</span>
+          <div className="flex flex-col flex-1 min-w-0">
+            <span className="font-bold text-sm truncate">Sin conexión a Internet</span>
             <span className="text-xs mt-0.5 opacity-90 leading-snug">
               Modo supervivencia activo. Estás viendo los últimos incidentes guardados en tu dispositivo antes del corte de red.
             </span>
@@ -120,9 +120,9 @@ function App() {
       {/* Sidebar */}
       {!panicMode && (
         <div className={`
-          fixed inset-y-0 left-0 z-30 transform transition-transform duration-300 ease-in-out
-          xl:relative xl:transform-none w-full max-w-sm sm:w-80
-          ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full xl:translate-x-0'}
+          fixed inset-x-0 bottom-0 h-[85vh] z-30 transform transition-transform duration-400 ease-[cubic-bezier(0.32,0.72,0,1)] rounded-t-3xl overflow-hidden shadow-[0_-10px_40px_rgba(0,0,0,0.3)]
+          xl:inset-auto xl:inset-y-0 xl:left-0 xl:h-full xl:rounded-none xl:shadow-none xl:relative xl:w-96
+          ${isSidebarOpen ? 'translate-y-0 xl:translate-x-0' : 'translate-y-full xl:-translate-x-full xl:translate-y-0 xl:translate-x-0'}
         `}>
           <Sidebar onClose={() => setIsSidebarOpen(false)} />
         </div>
@@ -138,20 +138,36 @@ function App() {
           }
         }}
       >
-        {!panicMode && <AccessibilityMenu />}
+        {!panicMode && (
+          <div className={isSidebarOpen ? "hidden xl:block" : ""}>
+            <AccessibilityMenu />
+          </div>
+        )}
         <MapContainer />
-        {!panicMode && <LiveTicker />}
+        {!panicMode && (
+          <div className={isSidebarOpen ? "hidden xl:block" : ""}>
+            <LiveTicker />
+          </div>
+        )}
         
-      {/* Floating Weather Widget (Above Ticker) */}
-      {!panicMode && (
-        <div className="absolute bottom-32 sm:bottom-24 left-1/2 -translate-x-1/2 z-20 pointer-events-auto transition-all duration-300">
+      {/* Floating Weather Widget */}
+      {!panicMode && !selectedIncidentId && (
+        <div className={`absolute bottom-[4.5rem] sm:bottom-6 left-1/2 -translate-x-1/2 sm:left-4 sm:translate-x-150 z-20 pointer-events-auto transition-all duration-300 ${isSidebarOpen ? "hidden xl:block" : ""}`}>
           <WeatherWidget />
         </div>
       )}
 
         {/* Floating Right Filters */}
-        {!panicMode && <FloatingFilters />}
-        {!panicMode && <TimeSlider />}
+        {!panicMode && (
+          <div className={isSidebarOpen ? "hidden xl:block" : ""}>
+            <FloatingFilters />
+          </div>
+        )}
+        {!panicMode && !selectedIncidentId && (
+          <div className={isSidebarOpen ? "hidden xl:block" : ""}>
+            <TimeSlider />
+          </div>
+        )}
 
         {/* Mobile Toggle Button */}
         {!panicMode && (

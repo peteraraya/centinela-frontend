@@ -15,8 +15,8 @@ export const TimeSlider = () => {
   ];
 
   return (
-    <div className="absolute bottom-6 right-20 z-20 pointer-events-auto">
-      <div className="bg-white/90 dark:bg-slate-900/90 backdrop-blur-md px-3 py-2 rounded-xl sm:rounded-2xl shadow-lg border border-slate-200 dark:border-slate-800 flex items-center gap-2">
+    <div className="absolute bottom-6 left-1/2 -translate-x-1/2 sm:left-auto sm:translate-x-0 sm:right-20 z-20 pointer-events-auto">
+      <div className="bg-white/95 dark:bg-slate-900/95 backdrop-blur-md px-3 py-2 rounded-xl sm:rounded-2xl shadow-lg border border-slate-200 dark:border-slate-800 flex items-center gap-2">
         <Clock className="w-4 h-4 text-slate-400" />
         <div className="flex bg-slate-100 dark:bg-slate-800 p-0.5 rounded-lg">
           {options.map((opt) => (

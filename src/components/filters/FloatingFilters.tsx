@@ -34,7 +34,7 @@ export const FloatingFilters = () => {
   };
 
   return (
-    <div className="absolute right-4 top-20 sm:top-24 z-20 flex flex-col gap-3 sm:gap-4 max-h-[calc(100vh-6rem)] overflow-y-auto no-scrollbar pointer-events-auto pb-4 items-end">
+    <div className="absolute right-2 sm:right-4 top-1/2 -translate-y-1/2 z-20 flex flex-col gap-2 sm:gap-4 max-h-[85vh] overflow-y-auto no-scrollbar pointer-events-auto pb-2 items-end">
       
       {/* Incident Types */}
       <div className="bg-white/90 dark:bg-slate-900/90 backdrop-blur-md p-1.5 sm:p-2 rounded-xl sm:rounded-2xl shadow-lg border border-slate-200 dark:border-slate-800 flex flex-col gap-1 sm:gap-2 w-fit">
@@ -64,7 +64,7 @@ export const FloatingFilters = () => {
                 setSelectedIncidentId(null);
               }}
               title={t(filter.i18nKey) || filter.id}
-              className={`p-2 sm:p-3 min-w-[44px] min-h-[44px] flex items-center justify-center rounded-lg sm:rounded-xl transition-all ${
+              className={`p-1.5 sm:p-2 min-w-[36px] min-h-[36px] sm:min-w-[40px] sm:min-h-[40px] flex items-center justify-center rounded-lg transition-all ${
                 !isReallyAvailable 
                   ? 'bg-slate-100/50 dark:bg-slate-800/50 text-slate-400 dark:text-slate-600 cursor-not-allowed opacity-60'
                   : isActive 
@@ -72,52 +72,53 @@ export const FloatingFilters = () => {
                     : 'bg-slate-100 dark:bg-slate-800 text-slate-500 hover:bg-slate-200 dark:hover:bg-slate-700'
               }`}
             >
-              <Icon className="w-4 h-4 sm:w-5 sm:h-5" />
+              <Icon className="w-4 h-4" />
             </button>
           );
         })}
       </div>
 
       {/* Focus / Sound controls */}
-      <div className="bg-white/90 dark:bg-slate-900/90 backdrop-blur-md p-1.5 sm:p-2 rounded-xl sm:rounded-2xl shadow-lg border border-slate-200 dark:border-slate-800 grid grid-cols-2 gap-1 sm:gap-2 w-fit">
+      <div className="bg-white/90 dark:bg-slate-900/90 backdrop-blur-md p-1.5 sm:p-2 rounded-xl sm:rounded-2xl shadow-lg border border-slate-200 dark:border-slate-800 flex flex-col gap-1 sm:gap-2 w-fit">
+        <button
+          onClick={() => setShowStatusBoard(true)}
+          title="Ver Resumen Nacional"
+          className="col-span-2 p-1.5 sm:p-2 min-h-[32px] sm:min-h-[36px] flex items-center justify-center gap-1.5 rounded-lg transition-all bg-blue-50 text-blue-600 hover:bg-blue-500 hover:text-white dark:bg-blue-900/30 dark:text-blue-400 dark:hover:bg-blue-600 dark:hover:text-white font-semibold text-[10px] sm:text-xs"
+        >
+          <BarChart3 className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+          <span className="hidden sm:inline"></span>
+        </button>
+
         <button
           onClick={() => setSoundEnabled(!soundEnabled)}
-          title={soundEnabled ? "Silenciar alertas sonoras" : "Activar alertas sonoras"}
-          className={`p-2 sm:p-3 min-w-[44px] min-h-[44px] flex items-center justify-center rounded-lg sm:rounded-xl transition-all ${
+          title={soundEnabled ? "Silenciar alertas" : "Activar alertas"}
+          className={`p-1.5 sm:p-2 min-w-[36px] min-h-[36px] sm:min-w-[40px] sm:min-h-[40px] flex items-center justify-center rounded-lg transition-all ${
             soundEnabled 
               ? 'bg-slate-100 dark:bg-slate-800 text-blue-500 hover:bg-slate-200 dark:hover:bg-slate-700' 
               : 'bg-slate-100/50 dark:bg-slate-800/50 text-slate-400 opacity-60 hover:bg-slate-200'
           }`}
         >
-          {soundEnabled ? <Volume2 className="w-4 h-4 sm:w-5 sm:h-5" /> : <VolumeX className="w-4 h-4 sm:w-5 sm:h-5" />}
+          {soundEnabled ? <Volume2 className="w-4 h-4" /> : <VolumeX className="w-4 h-4" />}
         </button>
 
         <button
           onClick={() => setPanicMode(true)}
           title="Modo Visión de Túnel (Ocultar UI)"
-          className="p-2 sm:p-3 min-w-[44px] min-h-[44px] flex items-center justify-center rounded-lg sm:rounded-xl transition-all bg-red-100 text-red-600 hover:bg-red-500 hover:text-white dark:bg-red-900/30 dark:text-red-400 dark:hover:bg-red-600 dark:hover:text-white"
+          className="p-1.5 sm:p-2 min-w-[36px] min-h-[36px] sm:min-w-[40px] sm:min-h-[40px] flex items-center justify-center rounded-lg transition-all bg-red-50 text-red-600 hover:bg-red-500 hover:text-white dark:bg-red-900/30 dark:text-red-400 dark:hover:bg-red-600 dark:hover:text-white"
         >
-          <Focus className="w-4 h-4 sm:w-5 sm:h-5" />
-        </button>
-
-        <button
-          onClick={() => setShowStatusBoard(true)}
-          title="Ver Resumen Nacional"
-          className="col-span-2 p-2 sm:p-3 min-w-[44px] min-h-[44px] flex items-center justify-center rounded-lg sm:rounded-xl transition-all bg-blue-100 text-blue-600 hover:bg-blue-500 hover:text-white dark:bg-blue-900/30 dark:text-blue-400 dark:hover:bg-blue-600 dark:hover:text-white"
-        >
-          <BarChart3 className="w-4 h-4 sm:w-5 sm:h-5" />
+          <Focus className="w-4 h-4" />
         </button>
 
         <button
           onClick={() => setIsHeatmap(!isHeatmap)}
           title={isHeatmap ? "Ocultar Mapa de Calor" : "Ver Mapa de Calor"}
-          className={`p-2 sm:p-3 min-w-[44px] min-h-[44px] flex items-center justify-center rounded-lg sm:rounded-xl transition-all ${
+          className={`p-1.5 sm:p-2 min-w-[36px] min-h-[36px] sm:min-w-[40px] sm:min-h-[40px] flex items-center justify-center rounded-lg transition-all ${
             isHeatmap
               ? 'bg-amber-500 text-white shadow-md scale-105'
-              : 'bg-slate-100 dark:bg-slate-800 text-amber-600 hover:bg-slate-200 dark:hover:bg-slate-700'
+              : 'bg-slate-50 dark:bg-slate-800 text-amber-600 hover:bg-slate-200 dark:hover:bg-slate-700'
           }`}
         >
-          <Layers className="w-4 h-4 sm:w-5 sm:h-5" />
+          <Layers className="w-4 h-4" />
         </button>
         
         <button
@@ -127,14 +128,14 @@ export const FloatingFilters = () => {
             }
             setShowFarmacias(!showFarmacias);
           }}
-          title={showFarmacias ? "Ocultar Farmacias de Turno" : "Ver Farmacias de Turno"}
-          className={`p-2 sm:p-3 min-w-[44px] min-h-[44px] flex items-center justify-center rounded-lg sm:rounded-xl transition-all ${
+          title={showFarmacias ? "Ocultar Farmacias" : "Ver Farmacias"}
+          className={`p-1.5 sm:p-2 min-w-[36px] min-h-[36px] sm:min-w-[40px] sm:min-h-[40px] flex items-center justify-center rounded-lg transition-all ${
             showFarmacias
               ? 'bg-emerald-500 text-white shadow-md scale-105'
-              : 'bg-slate-100 dark:bg-slate-800 text-emerald-600 hover:bg-slate-200 dark:hover:bg-slate-700'
+              : 'bg-slate-50 dark:bg-slate-800 text-emerald-600 hover:bg-slate-200 dark:hover:bg-slate-700'
           }`}
         >
-          <Cross className="w-4 h-4 sm:w-5 sm:h-5" />
+          <Cross className="w-4 h-4" />
         </button>
       </div>
 
