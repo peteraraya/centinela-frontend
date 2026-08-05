@@ -34,7 +34,7 @@ export const FloatingFilters = () => {
   };
 
   return (
-    <div className="absolute right-0 sm:right-1 top-30 sm:top-30 z-20 flex flex-col gap-2 sm:gap-4 max-h-[calc(100vh-7rem)] overflow-y-auto no-scrollbar pointer-events-auto pb-4 items-end">
+    <div className="absolute right-2 sm:right-4 top-1/2 -translate-y-1/2 z-20 flex flex-col gap-2 sm:gap-4 max-h-[85vh] overflow-y-auto no-scrollbar pointer-events-auto pb-2 items-end">
       
       {/* Incident Types */}
       <div className="bg-white/90 dark:bg-slate-900/90 backdrop-blur-md p-1.5 sm:p-2 rounded-xl sm:rounded-2xl shadow-lg border border-slate-200 dark:border-slate-800 flex flex-col gap-1 sm:gap-2 w-fit">

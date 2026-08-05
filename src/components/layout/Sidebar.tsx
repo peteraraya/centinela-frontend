@@ -82,12 +82,15 @@ export const Sidebar = ({ onClose }: { onClose?: () => void }) => {
   const filteredIncidents = incidents?.filter(i => !hiddenFilters.includes(i.type) && !hiddenSeverities.includes(i.severity)) || [];
 
   return (
-    <div className="w-full h-full bg-slate-50 dark:bg-slate-900 shadow-[2px_0_20px_-5px_rgba(0,0,0,0.1)] z-10 flex flex-col border-r border-slate-200 dark:border-slate-800 transition-colors duration-300">
+    <div className="w-full h-full bg-slate-50 dark:bg-slate-900 xl:shadow-[2px_0_20px_-5px_rgba(0,0,0,0.1)] z-10 flex flex-col xl:border-r border-slate-200 dark:border-slate-800 transition-colors duration-300">
       
       {/* Header Premium */}
-      <div className="px-3 sm:px-4 pt-4 pb-3 sm:py-6 bg-white dark:bg-slate-900 border-b border-slate-100 dark:border-slate-800 relative shrink-0">
+      <div className="px-3 sm:px-4 pt-3 pb-3 sm:py-5 bg-white dark:bg-slate-900 border-b border-slate-100 dark:border-slate-800 relative shrink-0">
         <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-blue-600 via-purple-500 to-red-500" />
         
+        {/* Mobile Drag Handle */}
+        <div className="xl:hidden w-12 h-1.5 bg-slate-200 dark:bg-slate-700 rounded-full mx-auto mb-3" />
+
         <div className="flex flex-row items-start justify-between w-full relative z-10 gap-2">
           <div className="flex-1 min-w-0">
             <h1 className="text-lg sm:text-xl font-extrabold flex items-center gap-2 tracking-tight text-slate-900 dark:text-white">

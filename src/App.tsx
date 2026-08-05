@@ -16,7 +16,7 @@ import { Focus, WifiOff } from 'lucide-react';
 function App() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const { theme, fontSize } = useAccessibilityStore();
-  const { setSelectedIncidentId, panicMode, setPanicMode, showStatusBoard, setShowStatusBoard, userLocation, setUserLocation, setFlyToLocation } = useFilterStore();
+  const { selectedIncidentId, setSelectedIncidentId, panicMode, setPanicMode, showStatusBoard, setShowStatusBoard, userLocation, setUserLocation, setFlyToLocation } = useFilterStore();
   const [isOffline, setIsOffline] = useState(!navigator.onLine);
   
   useEffect(() => {
@@ -120,9 +120,9 @@ function App() {
       {/* Sidebar */}
       {!panicMode && (
         <div className={`
-          fixed inset-y-0 left-0 z-30 transform transition-transform duration-300 ease-in-out
-          xl:relative xl:transform-none w-full max-w-sm sm:w-80
-          ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full xl:translate-x-0'}
+          fixed inset-x-0 bottom-0 h-[85vh] z-30 transform transition-transform duration-400 ease-[cubic-bezier(0.32,0.72,0,1)] rounded-t-3xl overflow-hidden shadow-[0_-10px_40px_rgba(0,0,0,0.3)]
+          xl:inset-auto xl:inset-y-0 xl:left-0 xl:h-full xl:rounded-none xl:shadow-none xl:relative xl:w-96
+          ${isSidebarOpen ? 'translate-y-0 xl:translate-x-0' : 'translate-y-full xl:-translate-x-full xl:translate-y-0 xl:translate-x-0'}
         `}>
           <Sidebar onClose={() => setIsSidebarOpen(false)} />
         </div>
@@ -151,7 +151,7 @@ function App() {
         )}
         
       {/* Floating Weather Widget */}
-      {!panicMode && (
+      {!panicMode && !selectedIncidentId && (
         <div className={`absolute bottom-[4.5rem] sm:bottom-6 left-1/2 -translate-x-1/2 sm:left-4 sm:translate-x-150 z-20 pointer-events-auto transition-all duration-300 ${isSidebarOpen ? "hidden xl:block" : ""}`}>
           <WeatherWidget />
         </div>
@@ -163,7 +163,7 @@ function App() {
             <FloatingFilters />
           </div>
         )}
-        {!panicMode && (
+        {!panicMode && !selectedIncidentId && (
           <div className={isSidebarOpen ? "hidden xl:block" : ""}>
             <TimeSlider />
           </div>

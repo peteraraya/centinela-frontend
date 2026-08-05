@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useNews } from '../../hooks/useNews';
-import { ChevronRight, ChevronLeft, Pause, Play, Newspaper, X, Share2, Link as LinkIcon, MessageCircle } from 'lucide-react';
+import { ChevronRight, ChevronLeft, ChevronUp, Pause, Play, Newspaper, X, Share2, Link as LinkIcon, MessageCircle } from 'lucide-react';
 import { useFilterStore } from '../../store/useFilterStore';
 import { useRef } from 'react';
 import { toast } from 'react-hot-toast';
@@ -82,6 +82,7 @@ export const LiveTicker = () => {
   const { soundEnabled } = useFilterStore();
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
+  const [isExpanded, setIsExpanded] = useState(false); // Collapsed by default
   const [selectedNews, setSelectedNews] = useState<any>(null);
   const seenAlertsRef = useRef<Set<string>>(new Set());
 
@@ -114,6 +115,7 @@ export const LiveTicker = () => {
       }
       // Volver al primer índice para mostrar la alerta nueva
       setCurrentIndex(0);
+      setIsExpanded(true); // Auto-expand on new alert
     }
   }, [latestAlerts, soundEnabled]);
 
@@ -132,65 +134,85 @@ export const LiveTicker = () => {
   return (
     <>
     <div 
-      className="absolute top-4 sm:top-5 left-[4.2rem] right-[4.2rem] sm:left-[4rem] sm:right-[5rem] xl:left-1/2 xl:right-auto xl:-translate-x-1/2 xl:w-8/12 max-w-3xl z-30 pointer-events-auto transition-all duration-300 flex justify-center"
+      className={`absolute top-4 sm:top-5 z-30 pointer-events-auto transition-all duration-500 flex justify-center ${
+        isExpanded 
+          ? 'left-[4.5rem] right-[4.5rem] sm:left-[5.5rem] sm:right-[5.5rem] xl:left-1/2 xl:right-auto xl:-translate-x-1/2 xl:w-8/12 max-w-3xl' 
+          : 'left-1/2 -translate-x-1/2 w-auto'
+      }`}
       onMouseEnter={() => setIsPaused(true)}
       onMouseLeave={() => setIsPaused(false)}
     >
-      <div className="bg-white/95 dark:bg-slate-900/95 backdrop-blur-md text-slate-800 dark:text-slate-200 rounded-xl shadow-xl p-1.5 sm:p-2 flex items-center gap-2 sm:gap-3 border border-slate-200 dark:border-slate-800 overflow-hidden transition-all duration-300 cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-800 w-full"
-        onClick={() => {
-          setSelectedNews(currentAlert);
-          setIsPaused(true);
-        }}
-      >
-        
-        <div className="bg-indigo-600 dark:bg-indigo-500 text-white text-[10px] sm:text-xs font-bold px-3 py-2 rounded-lg sm:rounded-xl flex items-center shrink-0 gap-1.5 whitespace-nowrap uppercase tracking-widest shadow-md">
-          <Newspaper className={`w-3.5 h-3.5 sm:w-4 sm:h-4 ${!isPaused ? 'animate-pulse' : ''}`} />
-          <span className="hidden sm:inline">Noticias Nacionales</span>
-        </div>
-        
-        <div className="flex-1 min-w-0 overflow-hidden relative">
-          <div 
-            key={currentAlert.id} 
-            className="text-xs sm:text-sm font-medium truncate animate-in slide-in-from-bottom-2 fade-in duration-300 flex items-center gap-2"
+      {!isExpanded ? (
+        <button
+          onClick={() => setIsExpanded(true)}
+          className="bg-indigo-600 dark:bg-indigo-500 text-white px-3 sm:px-4 py-2 sm:py-2.5 rounded-full shadow-lg border border-indigo-400 dark:border-indigo-600 flex items-center gap-2 hover:bg-indigo-700 transition-all hover:scale-105 animate-in slide-in-from-top-4 fade-in"
+          title="Ver Noticias"
+        >
+          <Newspaper className="w-4 h-4 animate-pulse" />
+          <span className="text-[10px] sm:text-xs font-bold uppercase tracking-widest whitespace-nowrap">
+            {latestAlerts.length} Noticias
+          </span>
+        </button>
+      ) : (
+        <div className="bg-white/95 dark:bg-slate-900/95 backdrop-blur-md text-slate-800 dark:text-slate-200 rounded-xl shadow-xl p-1.5 sm:p-2 flex items-center gap-2 sm:gap-3 border border-slate-200 dark:border-slate-800 overflow-hidden transition-all duration-500 cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-800 w-full animate-in slide-in-from-top-2 fade-in"
+          onClick={() => {
+            setSelectedNews(currentAlert);
+            setIsPaused(true);
+          }}
+        >
+          
+          <button 
+            onClick={(e) => { e.stopPropagation(); setIsExpanded(false); }}
+            className="bg-slate-200 dark:bg-slate-700 text-slate-600 dark:text-slate-300 p-2 rounded-lg sm:rounded-xl flex items-center shrink-0 hover:bg-slate-300 dark:hover:bg-slate-600 transition-colors"
+            title="Ocultar"
           >
-            <span className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider text-white shrink-0 ${
-              currentAlert.type === 'fire' ? 'bg-red-500' :
-              currentAlert.type === 'traffic' ? 'bg-orange-500' :
-              currentAlert.type === 'power' ? 'bg-amber-500' :
-              currentAlert.type === 'weather' ? 'bg-blue-500' :
-              currentAlert.type === 'alert' ? 'bg-teal-500' : 'bg-indigo-500'
-            }`}>
-              {currentAlert.type}
-            </span>
-            <span className="text-slate-900 dark:text-white font-bold">{currentAlert.title}</span>
-            <span className="opacity-70 truncate hidden md:inline">- {currentAlert.description}</span>
+            <ChevronUp className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+          </button>
+          
+          <div className="flex-1 min-w-0 overflow-hidden relative">
+            <div 
+              key={currentAlert.id} 
+              className="text-xs sm:text-sm font-medium truncate animate-in slide-in-from-bottom-2 fade-in duration-300 flex items-center gap-2"
+            >
+              <span className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider text-white shrink-0 ${
+                currentAlert.type === 'fire' ? 'bg-red-500' :
+                currentAlert.type === 'traffic' ? 'bg-orange-500' :
+                currentAlert.type === 'power' ? 'bg-amber-500' :
+                currentAlert.type === 'weather' ? 'bg-blue-500' :
+                currentAlert.type === 'alert' ? 'bg-teal-500' : 'bg-indigo-500'
+              }`}>
+                {currentAlert.type}
+              </span>
+              <span className="text-slate-900 dark:text-white font-bold">{currentAlert.title}</span>
+              <span className="opacity-70 truncate hidden md:inline">- {currentAlert.description}</span>
+            </div>
+          </div>
+
+          <div className="flex items-center shrink-0 pr-1">
+            <button 
+              onClick={(e) => { e.stopPropagation(); setCurrentIndex((prev) => (prev - 1 + latestAlerts.length) % latestAlerts.length); setIsPaused(true); }}
+              className="p-1.5 sm:p-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition-colors text-slate-500"
+              title="Anterior"
+            >
+              <ChevronLeft className="w-4 h-4 sm:w-5 sm:h-5" />
+            </button>
+            <button 
+              onClick={(e) => { e.stopPropagation(); setIsPaused(!isPaused); }}
+              className="p-1.5 sm:p-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition-colors text-slate-500 hidden sm:flex"
+              title={isPaused ? "Reanudar" : "Pausar"}
+            >
+              {isPaused ? <Play className="w-4 h-4" /> : <Pause className="w-4 h-4" />}
+            </button>
+            <button 
+              onClick={(e) => { e.stopPropagation(); setCurrentIndex((prev) => (prev + 1) % latestAlerts.length); setIsPaused(true); }}
+              className="p-1.5 sm:p-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition-colors text-slate-500"
+              title="Siguiente"
+            >
+              <ChevronRight className="w-4 h-4 sm:w-5 sm:h-5" />
+            </button>
           </div>
         </div>
-
-        <div className="flex items-center shrink-0 pr-1">
-          <button 
-            onClick={(e) => { e.stopPropagation(); setCurrentIndex((prev) => (prev - 1 + latestAlerts.length) % latestAlerts.length); setIsPaused(true); }}
-            className="p-1.5 sm:p-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition-colors text-slate-500"
-            title="Anterior"
-          >
-            <ChevronLeft className="w-4 h-4 sm:w-5 sm:h-5" />
-          </button>
-          <button 
-            onClick={(e) => { e.stopPropagation(); setIsPaused(!isPaused); }}
-            className="p-1.5 sm:p-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition-colors text-slate-500 hidden sm:flex"
-            title={isPaused ? "Reanudar" : "Pausar"}
-          >
-            {isPaused ? <Play className="w-4 h-4" /> : <Pause className="w-4 h-4" />}
-          </button>
-          <button 
-            onClick={(e) => { e.stopPropagation(); setCurrentIndex((prev) => (prev + 1) % latestAlerts.length); setIsPaused(true); }}
-            className="p-1.5 sm:p-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition-colors text-slate-500"
-            title="Siguiente"
-          >
-            <ChevronRight className="w-4 h-4 sm:w-5 sm:h-5" />
-          </button>
-        </div>
-      </div>
+      )}
     </div>
 
     {selectedNews && (
