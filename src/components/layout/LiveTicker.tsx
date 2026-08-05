@@ -132,11 +132,11 @@ export const LiveTicker = () => {
   return (
     <>
     <div 
-      className="absolute top-4 sm:top-6 left-1/2 -translate-x-1/2 z-30 w-[95%] sm:w-11/12 max-w-4xl pointer-events-auto"
+      className="absolute top-4 sm:top-5 left-[4.2rem] right-[4.2rem] sm:left-[4rem] sm:right-[5rem] xl:left-1/2 xl:right-auto xl:-translate-x-1/2 xl:w-8/12 max-w-3xl z-30 pointer-events-auto transition-all duration-300 flex justify-center"
       onMouseEnter={() => setIsPaused(true)}
       onMouseLeave={() => setIsPaused(false)}
     >
-      <div className="bg-white/95 dark:bg-slate-900/95 backdrop-blur-md text-slate-800 dark:text-slate-200 rounded-xl sm:rounded-2xl shadow-2xl p-1.5 flex items-center gap-2 sm:gap-3 border border-slate-200 dark:border-slate-800 overflow-hidden transition-all duration-300 cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-800"
+      <div className="bg-white/95 dark:bg-slate-900/95 backdrop-blur-md text-slate-800 dark:text-slate-200 rounded-xl shadow-xl p-1.5 sm:p-2 flex items-center gap-2 sm:gap-3 border border-slate-200 dark:border-slate-800 overflow-hidden transition-all duration-300 cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-800 w-full"
         onClick={() => {
           setSelectedNews(currentAlert);
           setIsPaused(true);
@@ -239,11 +239,11 @@ export const LiveTicker = () => {
             )}
           </div>
 
-          <div className="px-5 py-4 bg-slate-50 dark:bg-slate-800/80 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between shrink-0">
+          <div className="px-4 sm:px-5 py-3 sm:py-4 bg-slate-50 dark:bg-slate-800/80 border-t border-slate-100 dark:border-slate-800 flex flex-wrap items-center justify-between gap-3 shrink-0">
             <span className="text-xs font-bold text-slate-500 dark:text-slate-400 flex items-center gap-1.5">
-              <Share2 className="w-4 h-4" /> Compartir Noticia
+              <Share2 className="w-4 h-4" /> <span className="hidden xs:inline sm:inline">Compartir Noticia</span>
             </span>
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-1.5 sm:gap-2">
               <button 
                 onClick={() => {
                   const text = `📰 Noticia: ${selectedNews.title}\n\n${selectedNews.description}\n\nApp Centinela 🇨🇱`;
